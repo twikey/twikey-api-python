@@ -1,0 +1,6 @@
+venv
+*.iml
+*.egg-info
+.vscode
+build
+dist
