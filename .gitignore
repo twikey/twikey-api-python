@@ -4,3 +4,6 @@ venv
 .vscode
 build
 dist
+pyvenv.cfg
+.tox
+bin

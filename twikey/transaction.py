@@ -2,7 +2,6 @@ import requests
 
 
 class Transaction(object):
-
     def __init__(self, client) -> None:
         super().__init__()
         self.client = client

@@ -2,6 +2,7 @@ import os
 import twikey
 import unittest
 
+
 class TestInvoices(unittest.TestCase):
     _twikey = None
 
@@ -18,28 +19,30 @@ class TestInvoices(unittest.TestCase):
         self._twikey = twikey.TwikeyClient(key, baseUrl)
 
     def test_new_invite(self):
-        invoice = self._twikey.invoice.create({
-            "number": "Inv20200001",
-            "title": "Invoice July",
-            "remittance": "596843697521",
-            "ct": 1988,
-            "amount": 100,
-            "date": "2020-01-31",
-            "duedate": "2020-02-28",
-            "customer": {
-                "customerNumber": "customer123",
-                "email": "no-reply@twikey.com",
-                "firstname": "Twikey",
-                "lastname": "Support",
-                "address": "Derbystraat 43",
-                "city": "Gent",
-                "zip": "9000",
-                "country": "BE",
-                "l": "nl",
-                "mobile": "32498665995"
-            },
-            # "pdf": "JVBERi0xLj....RU9GCg=="
-        })
+        invoice = self._twikey.invoice.create(
+            {
+                "number": "Inv20200001",
+                "title": "Invoice July",
+                "remittance": "596843697521",
+                "ct": 1988,
+                "amount": 100,
+                "date": "2020-01-31",
+                "duedate": "2020-02-28",
+                "customer": {
+                    "customerNumber": "customer123",
+                    "email": "no-reply@twikey.com",
+                    "firstname": "Twikey",
+                    "lastname": "Support",
+                    "address": "Derbystraat 43",
+                    "city": "Gent",
+                    "zip": "9000",
+                    "country": "BE",
+                    "l": "nl",
+                    "mobile": "32498665995",
+                },
+                # "pdf": "JVBERi0xLj....RU9GCg=="
+            }
+        )
         self.assertIsNotNone(invoice)
 
     def test_feed(self):
@@ -47,10 +50,9 @@ class TestInvoices(unittest.TestCase):
 
 
 class MyFeed(twikey.TransactionFeed):
-
     def transaction(self, transaction):
         print("new ", transaction.ref, transaction.state)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

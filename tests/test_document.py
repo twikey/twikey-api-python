@@ -18,22 +18,24 @@ class TestDocument(unittest.TestCase):
         ct = 1
         if "CT" in os.environ:
             ct = os.environ["CT"]
-        invite = self._twikey.document.create({
-            "ct": ct,
-            "email": "info@twikey.com",
-            "firstname": "Info",
-            "lastname": "Twikey",
-            "l": "en",
-            "address": "Abby road",
-            "city": "Liverpool",
-            "zip": "1526",
-            "country": "BE",
-            "mobile": "",
-            "iban": "",
-            "bic": "",
-            "mandateNumber": "",
-            "contractNumber": ""
-        })
+        invite = self._twikey.document.create(
+            {
+                "ct": ct,
+                "email": "info@twikey.com",
+                "firstname": "Info",
+                "lastname": "Twikey",
+                "l": "en",
+                "address": "Abby road",
+                "city": "Liverpool",
+                "zip": "1526",
+                "country": "BE",
+                "mobile": "",
+                "iban": "",
+                "bic": "",
+                "mandateNumber": "",
+                "contractNumber": "",
+            }
+        )
         self.assertIsNotNone(invite)
 
     def test_feed(self):
@@ -41,7 +43,6 @@ class TestDocument(unittest.TestCase):
 
 
 class MyDocumentFeed(twikey.DocumentFeed):
-
     def newDocument(self, doc):
         print("new ", doc["MndtId"])
 
@@ -52,5 +53,5 @@ class MyDocumentFeed(twikey.DocumentFeed):
         print("cancelled ", docNumber, "b/c", reason["Rsn"])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

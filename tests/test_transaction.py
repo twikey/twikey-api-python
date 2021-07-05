@@ -2,6 +2,7 @@ import os
 import twikey
 import unittest
 
+
 class TestTransaction(unittest.TestCase):
     _twikey = None
 
@@ -18,13 +19,15 @@ class TestTransaction(unittest.TestCase):
         self._twikey = twikey.TwikeyClient(key, baseUrl)
 
     def test_new_invite(self):
-        tx = self._twikey.transaction.create({
-            "mndtId": "CORERECURRENTNL16318",
-            "message": "Test Message",
-            "ref": "Merchant Reference",
-            "amount": 10.00,
-            "place": "Here"
-        })
+        tx = self._twikey.transaction.create(
+            {
+                "mndtId": "CORERECURRENTNL16318",
+                "message": "Test Message",
+                "ref": "Merchant Reference",
+                "amount": 10.00,
+                "place": "Here",
+            }
+        )
         self.assertIsNotNone(tx)
 
     def test_feed(self):
@@ -32,10 +35,9 @@ class TestTransaction(unittest.TestCase):
 
 
 class MyFeed(twikey.TransactionFeed):
-
     def transaction(self, transaction):
         print("new ", transaction.ref, transaction.state)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

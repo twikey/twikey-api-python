@@ -2,6 +2,7 @@ import os
 import twikey
 import unittest
 
+
 class TestPaylinks(unittest.TestCase):
     _twikey = None
 
@@ -18,12 +19,14 @@ class TestPaylinks(unittest.TestCase):
         self._twikey = twikey.TwikeyClient(key, baseUrl)
 
     def test_new_invite(self):
-        tx = self._twikey.paylink.create({
-            "email": "no-repy@twikey.com",
-            "message": "Test Message",
-            "ref": "Merchant Reference",
-            "amount": 10.00
-        })
+        tx = self._twikey.paylink.create(
+            {
+                "email": "no-repy@twikey.com",
+                "message": "Test Message",
+                "ref": "Merchant Reference",
+                "amount": 10.00,
+            }
+        )
         self.assertIsNotNone(tx)
 
     def test_feed(self):
@@ -31,10 +34,9 @@ class TestPaylinks(unittest.TestCase):
 
 
 class MyFeed(twikey.PaylinkFeed):
-
     def paylink(self, paylink):
         print("new ", paylink)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

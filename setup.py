@@ -3,8 +3,10 @@ import os
 
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
 
+
 def get_long_description():
     return open(os.path.join(ROOT_DIR, "README.md")).read()
+
 
 setup(
     name="twikey-api-python",
@@ -23,7 +25,7 @@ setup(
         'requests >= 2.20; python_version >= "3.0"',
         'requests[security] >= 2.20; python_version < "3.0"',
     ],
-    python_requires=">=3.0",
+    python_requires=">=3.6",
     project_urls={
         "Bug Tracker": "https://github.com/twikey/twikey-api-python/issues",
         "Source Code": "https://github.com/twikey/twikey-api-python",
@@ -35,11 +37,7 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.4",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
