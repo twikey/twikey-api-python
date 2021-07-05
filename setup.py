@@ -10,7 +10,7 @@ def get_long_description():
 
 setup(
     name="twikey-api-python",
-    version="v0.1.0",
+    version="v0.1.1",
     description="Humble python client to interface with the Twikey api",
     author="Twikey",
     author_email="support@twikey.com",
@@ -31,7 +31,7 @@ setup(
         "Source Code": "https://github.com/twikey/twikey-api-python",
     },
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         # "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
