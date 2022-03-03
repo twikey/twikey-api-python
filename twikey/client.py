@@ -17,6 +17,7 @@ class TwikeyClient(object):
     lastLogin = None
     api_key = None
     api_token = None  # Once authenticated
+    merchant_id = 0  # Once authenticated
     private_key = None
     vendorPrefix = "own"
     api_base = "https://api.twikey.com"
@@ -35,6 +36,7 @@ class TwikeyClient(object):
         self.user_agent = user_agent
         self.api_key = api_key
         self.api_base = base_url
+        self.merchant_id = 0
         self.document = Document(self)
         self.transaction = Transaction(self)
         self.paylink = Paylink(self)
@@ -65,7 +67,10 @@ class TwikeyClient(object):
             if self.private_key:
                 payload["otp"] = self.get_totp(self.vendorPrefix, self.private_key)
 
-            self.logger.debug("Authenticating with", self.api_base, payload)
+            if not self.api_base:
+                raise requests.URLRequired("No base url defined - %s" % self.api_base)
+
+            self.logger.debug("Authenticating with %s" % self.api_base)
             response = requests.post(
                 self.instance_url(),
                 data=payload,
@@ -73,12 +78,13 @@ class TwikeyClient(object):
             )
             if "ApiErrorCode" in response.headers:
                 # print response.headers
-                raise Exception(
+                raise requests.exceptions.HTTPError(
                     "Error authenticating : %s - %s"
                     % (response.headers["ApiErrorCode"], response.headers["ApiError"])
                 )
 
             self.api_token = response.headers["Authorization"]
+            self.merchant_id = response.headers["X-MERCHANT-ID"]
             self.lastLogin = datetime.datetime.now()
 
     def headers(self, contentType="application/x-www-form-urlencoded"):
