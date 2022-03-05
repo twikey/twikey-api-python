@@ -17,7 +17,7 @@ class Document(object):
         if "ApiErrorCode" in response.headers:
             error = jsonResponse
             raise Exception("Error invite : %s" % error)
-        self.logger.debug("Added new mandate : %s" % jsonResponse.mndtId)
+        self.logger.debug("Added new mandate : %s" % jsonResponse['mndtId'])
         return jsonResponse
 
     def update(self, data):

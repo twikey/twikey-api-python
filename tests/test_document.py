@@ -46,7 +46,7 @@ class MyDocumentFeed(twikey.DocumentFeed):
     def newDocument(self, doc):
         print("new ", doc["MndtId"])
 
-    def updatedDocument(self, doc, reason):
+    def updatedDocument(self, original_mandate_number, doc, reason):
         print("update ", doc["MndtId"], "b/c", reason["Rsn"])
 
     def cancelDocument(self, docNumber, reason):
