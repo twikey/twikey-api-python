@@ -17,10 +17,6 @@ test: venv
 test-nomock: venv
 	@${VENV_NAME}/bin/tox -p auto -- --nomock $(TOX_ARGS)
 
-test-travis: venv
-	${VENV_NAME}/bin/python -m pip install -U tox-travis
-	@${VENV_NAME}/bin/tox -p auto $(TOX_ARGS)
-
 coveralls: venv
 	@${VENV_NAME}/bin/tox -e coveralls
 

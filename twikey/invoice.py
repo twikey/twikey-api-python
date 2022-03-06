@@ -21,10 +21,12 @@ class Invoice(object):
         self.logger.debug("Added invoice : %s" % jsonResponse["url"])
         return jsonResponse
 
-    def feed(self, invoiceFeed):
-        url = self.client.instance_url(
-            "/invoice?include=customer&include=meta&include=lastpayment"
-        )
+    def feed(self, invoiceFeed, *includes):
+        _includes = ""
+        for include in includes:
+            _includes += "&include=" + include
+
+        url = self.client.instance_url("/invoice?include=customer" + _includes)
 
         self.client.refreshTokenIfRequired()
         response = requests.get(url=url, headers=self.client.headers())

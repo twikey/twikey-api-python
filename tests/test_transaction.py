@@ -31,12 +31,33 @@ class TestTransaction(unittest.TestCase):
         self.assertIsNotNone(tx)
 
     def test_feed(self):
-        self._twikey.document.feed(MyFeed())
+        self._twikey.transaction.feed(MyFeed())
 
 
 class MyFeed(twikey.TransactionFeed):
     def transaction(self, transaction):
-        print("new ", transaction.ref, transaction.state)
+        state = transaction["state"]
+        final = transaction["final"]
+        ref = transaction["ref"]
+        if not ref:
+            ref = transaction["msg"]
+        _state = state
+        _final = ""
+        if state == "PAID":
+            _state = "is now paid"
+        elif state == "ERROR":
+            _state = "failed due to '" + transaction["bkmsg"] + "'"
+            if final:
+                # final means Twikey has gone through all dunning steps, but customer still did not pay
+                _final = "with no more dunning steps"
+        print(
+            "Transaction update",
+            transaction["amount"],
+            "euro with",
+            ref,
+            _state,
+            _final,
+        )
 
 
 if __name__ == "__main__":

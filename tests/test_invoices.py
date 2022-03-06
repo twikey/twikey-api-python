@@ -1,11 +1,13 @@
 import os
 import twikey
 import unittest
+import time
+import uuid
+from datetime import date, timedelta
 
 
 class TestInvoices(unittest.TestCase):
     _twikey = None
-
     ct = 1
 
     @unittest.skipIf("TWIKEY_API_KEY" not in os.environ, "No TWIKEY_API_KEY set")
@@ -21,13 +23,14 @@ class TestInvoices(unittest.TestCase):
     def test_new_invite(self):
         invoice = self._twikey.invoice.create(
             {
-                "number": "Inv20200001",
-                "title": "Invoice July",
+                "id": str(uuid.uuid4()),
+                "number": "Inv-" + str(round(time.time())),
+                "title": "Invoice " + date.today().strftime("%B"),
                 "remittance": "596843697521",
                 "ct": 1988,
                 "amount": 100,
-                "date": "2020-01-31",
-                "duedate": "2020-02-28",
+                "date": date.today().isoformat(),
+                "duedate": (date.today() + timedelta(days=7)).isoformat(),
                 "customer": {
                     "customerNumber": "customer123",
                     "email": "no-reply@twikey.com",
@@ -44,14 +47,23 @@ class TestInvoices(unittest.TestCase):
             }
         )
         self.assertIsNotNone(invoice)
+        print("New invoice to be paid @ " + invoice["url"])
 
     def test_feed(self):
-        self._twikey.document.feed(MyFeed())
+        self._twikey.invoice.feed(MyFeed(), "meta", "include", "lastpayment")
 
 
-class MyFeed(twikey.TransactionFeed):
-    def transaction(self, transaction):
-        print("new ", transaction.ref, transaction.state)
+class MyFeed(twikey.InvoiceFeed):
+    def invoice(self, invoice):
+        if invoice["state"] == "PAID":
+            newState = "PAID via " + invoice["lastpayment"]["method"]
+        else:
+            newState = "now has state " + invoice["state"]
+        print(
+            "Invoice update with number {0} {1} euro {2}".format(
+                invoice["number"], invoice["amount"], newState
+            )
+        )
 
 
 if __name__ == "__main__":

@@ -35,7 +35,11 @@ class TestPaylinks(unittest.TestCase):
 
 class MyFeed(twikey.PaylinkFeed):
     def paylink(self, paylink):
-        print("new ", paylink)
+        print(
+            "Paylink update #{0} {1} Euro with new state={2}".format(
+                paylink["id"], paylink["amount"], paylink["state"]
+            )
+        )
 
 
 if __name__ == "__main__":

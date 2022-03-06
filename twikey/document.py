@@ -17,7 +17,7 @@ class Document(object):
         if "ApiErrorCode" in response.headers:
             error = jsonResponse
             raise Exception("Error invite : %s" % error)
-        self.logger.debug("Added new mandate : %s" % jsonResponse['mndtId'])
+        self.logger.debug("Added new mandate : %s" % jsonResponse["mndtId"])
         return jsonResponse
 
     def update(self, data):
@@ -63,13 +63,15 @@ class Document(object):
                     self.logger.debug("Feed update : %s" % (mndt_id_))
                     mndt_ = msg["Mndt"]
                     rsn_ = msg["AmdmntRsn"]
-                    documentFeed.updatedDocument(mndt_id_, mndt_, rsn_)
+                    documentFeed.updatedDocument(mndt_id_, mndt_, rsn_, msg["EvtTime"])
                 elif "CxlRsn" in msg:
                     self.logger.debug("Feed cancel : %s" % (msg["OrgnlMndtId"]))
-                    documentFeed.cancelDocument(msg["OrgnlMndtId"], msg["CxlRsn"])
+                    documentFeed.cancelDocument(
+                        msg["OrgnlMndtId"], msg["CxlRsn"], msg["EvtTime"]
+                    )
                 else:
                     self.logger.debug("Feed create : %s" % (msg["Mndt"]))
-                    documentFeed.newDocument(msg["Mndt"])
+                    documentFeed.newDocument(msg["Mndt"], msg["EvtTime"])
             response = requests.get(url=url, headers=self.client.headers())
             if "ApiErrorCode" in response.headers:
                 error = response.json()
@@ -80,11 +82,11 @@ class Document(object):
 
 
 class DocumentFeed:
-    def newDocument(self, doc):
+    def newDocument(self, doc, evtTime):
         pass
 
-    def updatedDocument(self, original_mandate_number, doc, reason):
+    def updatedDocument(self, original_mandate_number, doc, reason, evtTime):
         pass
 
-    def cancelDocument(self, docNumber, reason):
+    def cancelDocument(self, docNumber, reason, evtTime):
         pass
