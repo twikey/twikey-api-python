@@ -8,20 +8,26 @@ class Invoice(object):
         self.client = client
         self.logger = logging.getLogger(__name__)
 
-    def create(self, data):
+    def create(self, data, origin=False, purpose=False, manual=False):
         url = self.client.instance_url("/invoice")
         data = data or {}
         self.client.refreshTokenIfRequired()
         headers = self.client.headers("application/json")
+        if origin:
+            headers["X-PARTNER"] = origin
+        if purpose:
+            headers["X-Purpose"] = purpose
+        if manual:
+            headers["X-MANUAL"] = "true"
         response = requests.post(url=url, json=data, headers=headers)
-        jsonResponse = response.json()
+        json_response = response.json()
         if "ApiErrorCode" in response.headers:
-            error = jsonResponse
+            error = json_response
             raise Exception("Error creating : %s" % error)
-        self.logger.debug("Added invoice : %s" % jsonResponse["url"])
-        return jsonResponse
+        self.logger.debug("Added invoice : %s" % json_response["url"])
+        return json_response
 
-    def feed(self, invoiceFeed, *includes):
+    def feed(self, invoice_feed, *includes):
         _includes = ""
         for include in includes:
             _includes += "&include=" + include
@@ -36,17 +42,17 @@ class Invoice(object):
                 "Error feed : %s - %s"
                 % (response.headers["ApiErrorCode"], response.headers["ApiError"])
             )
-        feedResponse = response.json()
-        while len(feedResponse["Invoices"]) > 0:
-            self.logger.debug("Feed handling : %d" % (len(feedResponse["Invoices"])))
-            for invoice in feedResponse["Invoices"]:
+        feed_response = response.json()
+        while len(feed_response["Invoices"]) > 0:
+            self.logger.debug("Feed handling : %d" % (len(feed_response["Invoices"])))
+            for invoice in feed_response["Invoices"]:
                 self.logger.debug("Feed handling : %s" % invoice)
-                invoiceFeed.invoice(invoice)
+                invoice_feed.invoice(invoice)
             response = requests.get(url=url, headers=self.client.headers())
             if "ApiErrorCode" in response.headers:
                 error = response.json()
                 raise Exception("Error feed : %s" % error)
-            feedResponse = response.json()
+            feed_response = response.json()
 
     def geturl(self, invoice_id):
         return "%s/%s/%s" % (

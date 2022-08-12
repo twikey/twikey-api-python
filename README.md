@@ -51,6 +51,7 @@ and configure your API key which you can find in the [Twikey merchant interface]
 ```python
 import twikey
 
+APIKEY = 'apikey_as_found_in_twikey'
 twikeyClient = twikey.TwikeyClient(APIKEY, "https://api.beta.twikey.com")
 ``` 
 
@@ -60,7 +61,11 @@ Invite a customer to sign a SEPA mandate using a specific behaviour template (ct
 the behaviour or flow that the customer will experience. This 'ct' can be found in the template section of the settings.
 
 ```python
-invite = twikeyClient.document.create({
+import twikey
+
+ct = 123 # See settings/profile in twikey
+
+invite = twikey.TwikeyClient.document.create({
    "ct": ct,
    "email": "info@twikey.com",
    "firstname": "Info",
@@ -81,16 +86,16 @@ think of as reading out a queue. Since it'll return you the changes since the la
 import twikey
 
 class MyDocumentFeed(twikey.DocumentFeed):
-    def newDocument(self, doc):
+    def newDocument(self, doc, evt_time):
         print("new ", doc["MndtId"])
 
-    def updatedDocument(self, orinalDocNumber, doc, reason):
+    def updatedDocument(self, original_mandate_number, doc, reason, evt_time):
         print("update ", doc["MndtId"], "b/c", reason["Rsn"])
 
-    def cancelDocument(self, docNumber, reason):
-        print("cancelled ", docNumber, "b/c", reason["Rsn"])
+    def cancelDocument(self, doc_number, reason, evt_time):
+        print("cancelled ", doc_number, "b/c", reason["Rsn"])
 
-twikeyClient.document.feed(MyDocumentFeed())
+twikey.TwikeyClient.document.feed(MyDocumentFeed())
 ```
 
 ## Transactions
@@ -98,7 +103,9 @@ twikeyClient.document.feed(MyDocumentFeed())
 Send new transactions and act upon feedback from the bank.
 
 ```python
-tx = twikeyClient.transaction.create({
+import twikey
+
+tx = twikey.TwikeyClient.transaction.create({
    "mndtId" : "CORERECURRENTNL16318",
    "message" : "Test Message",
    "ref" : "Merchant Reference",
@@ -116,7 +123,7 @@ class MyFeed(twikey.TransactionFeed):
     def transaction(self, transaction):
         print("TX ", transaction.ref, transaction.state)
 
-twikeyClient.transaction.feed(MyFeed())
+twikey.TwikeyClient.transaction.feed(MyFeed())
 ```
 
 ## Webhook ##
@@ -125,13 +132,15 @@ When wants to inform you about new updates about documents or payments a `webhoo
 
 ```python
 import Flask 
-import twikey 
+import urllib
+import twikey
 
+APIKEY = 'apikey_as_found_in_twikey'
 app = Flask(__name__)
 
 @app.route('/webhook', methods=['GET'])
 def webhook(request):
-   payload = unquote(request.query_string)
+   payload = urllib.parse.unquote(request.query_string)
    received_sign = request.headers.get('X-Signature')
    if not received_sign:
       return False

@@ -16,7 +16,7 @@ class Paylink(object):
             raise Exception("Error creating paylink : %s" % error)
         return response.json()
 
-    def feed(self, paylinkFeed):
+    def feed(self, paylink_feed):
         url = self.client.instance_url("/payment/link/feed")
 
         self.client.refreshTokenIfRequired()
@@ -25,15 +25,15 @@ class Paylink(object):
         if "ApiErrorCode" in response.headers:
             error = response.json()
             raise Exception("Error feed : %s" % error)
-        feedResponse = response.json()
-        while len(feedResponse["Links"]) > 0:
-            for msg in feedResponse["Links"]:
-                paylinkFeed.paylink(msg)
+        feed_response = response.json()
+        while len(feed_response["Links"]) > 0:
+            for msg in feed_response["Links"]:
+                paylink_feed.paylink(msg)
             response = requests.get(url=url, headers=self.client.headers())
             if "ApiErrorCode" in response.headers:
                 error = response.json()
                 raise Exception("Error feed : %s" % error)
-            feedResponse = response.json()
+            feed_response = response.json()
 
 
 class PaylinkFeed:

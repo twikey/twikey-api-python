@@ -1,9 +1,3 @@
-import binascii
-import hmac
-import struct
-import time
-import datetime
-
 import requests
 
 from .document import Document
@@ -11,6 +5,7 @@ from .transaction import Transaction
 from .paylink import Paylink
 from .invoice import Invoice
 import logging
+import datetime
 
 
 class TwikeyClient(object):
@@ -19,7 +14,7 @@ class TwikeyClient(object):
     api_token = None  # Once authenticated
     merchant_id = 0  # Once authenticated
     private_key = None
-    vendorPrefix = "own"
+    vendorPrefix = b"own"
     api_base = "https://api.twikey.com"
 
     document = None
@@ -32,9 +27,11 @@ class TwikeyClient(object):
         api_key,
         base_url="https://api.twikey.com",
         user_agent="twikey-python/v0.1.0",
+        private_key=None,
     ) -> None:
         self.user_agent = user_agent
         self.api_key = api_key
+        self.private_key = private_key
         self.api_base = base_url
         self.merchant_id = 0
         self.document = Document(self)
@@ -48,14 +45,17 @@ class TwikeyClient(object):
 
     def get_totp(self, vendorPrefix, secret):
         """Return the Time-Based One-Time Password for the current time, and the provided secret (base32 encoded)"""
-        secret = bytearray(vendorPrefix) + binascii.unhexlify(secret)
+        import hashlib
+        import struct
+        import binascii
+        import hmac
+        import time
+
+        secret = vendorPrefix + binascii.unhexlify(secret)
         counter = struct.pack(">Q", int(time.time()) // 30)
 
-        import hashlib
-
         hash = hmac.new(secret, counter, hashlib.sha256).digest()
-        offset = ord(hash[19]) & 0xF
-
+        offset = hash[19] & 0xF
         return (
             struct.unpack(">I", hash[offset : offset + 4])[0] & 0x7FFFFFFF
         ) % 100000000

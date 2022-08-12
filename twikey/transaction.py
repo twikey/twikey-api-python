@@ -17,7 +17,7 @@ class Transaction(object):
             raise Exception("Error sending transaction : %s" % error)
         return response.json()["Entries"][0]
 
-    def feed(self, transactionFeed):
+    def feed(self, transaction_feed):
         url = self.client.instance_url("/transaction")
 
         self.client.refreshTokenIfRequired()
@@ -26,15 +26,15 @@ class Transaction(object):
         if "ApiErrorCode" in response.headers:
             error = response.json()
             raise Exception("Error feed : %s" % error)
-        feedResponse = response.json()
-        while len(feedResponse["Entries"]) > 0:
-            for msg in feedResponse["Entries"]:
-                transactionFeed.transaction(msg)
+        feed_response = response.json()
+        while len(feed_response["Entries"]) > 0:
+            for msg in feed_response["Entries"]:
+                transaction_feed.transaction(msg)
             response = requests.get(url=url, headers=self.client.headers())
             if "ApiErrorCode" in response.headers:
                 error = response.json()
                 raise Exception("Error creating : %s" % error)
-            feedResponse = response.json()
+            feed_response = response.json()
 
 
 class TransactionFeed:

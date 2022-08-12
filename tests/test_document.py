@@ -43,16 +43,16 @@ class TestDocument(unittest.TestCase):
 
 
 class MyDocumentFeed(twikey.DocumentFeed):
-    def newDocument(self, doc, evtTime):
-        print("Document created   ", doc["MndtId"], "@", evtTime)
+    def newDocument(self, doc, evt_time):
+        print("Document created   ", doc["MndtId"], "@", evt_time)
 
-    def updatedDocument(self, original_number, doc, reason, evtTime):
+    def updatedDocument(self, original_number, doc, reason, evt_time):
         print(
-            "Document updated   ", original_number, "b/c", reason["Rsn"], "@", evtTime
+            "Document updated   ", original_number, "b/c", reason["Rsn"], "@", evt_time
         )
 
-    def cancelDocument(self, number, reason, evtTime):
-        print("Document cancelled ", number, "b/c", reason["Rsn"], "@", evtTime)
+    def cancelDocument(self, number, reason, evt_time):
+        print("Document cancelled ", number, "b/c", reason["Rsn"], "@", evt_time)
 
 
 if __name__ == "__main__":

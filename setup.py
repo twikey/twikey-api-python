@@ -10,7 +10,7 @@ def get_long_description():
 
 setup(
     name="twikey-api-python",
-    version="v0.1.4",
+    version="v0.1.7",
     description="Python interface with the Twikey api",
     author="Twikey",
     author_email="support@twikey.com",

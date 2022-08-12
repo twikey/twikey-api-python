@@ -13,12 +13,12 @@ class Document(object):
         data = data or {}
         self.client.refreshTokenIfRequired()
         response = requests.post(url=url, data=data, headers=self.client.headers())
-        jsonResponse = response.json()
+        json_response = response.json()
         if "ApiErrorCode" in response.headers:
-            error = jsonResponse
+            error = json_response
             raise Exception("Error invite : %s" % error)
-        self.logger.debug("Added new mandate : %s" % jsonResponse["mndtId"])
-        return jsonResponse
+        self.logger.debug("Added new mandate : %s" % json_response["mndtId"])
+        return json_response
 
     def update(self, data):
         url = self.client.instance_url("/mandate/update")
@@ -45,7 +45,7 @@ class Document(object):
             error = response.json()
             raise Exception("Error invite : %s" % error)
 
-    def feed(self, documentFeed):
+    def feed(self, document_feed):
         url = self.client.instance_url("/mandate")
 
         self.client.refreshTokenIfRequired()
@@ -54,39 +54,39 @@ class Document(object):
         if "ApiErrorCode" in response.headers:
             error = response.json()
             raise Exception("Error feed : %s" % error)
-        feedResponse = response.json()
-        while len(feedResponse["Messages"]) > 0:
-            self.logger.debug("Feed handling : %d" % (len(feedResponse["Messages"])))
-            for msg in feedResponse["Messages"]:
+        feed_response = response.json()
+        while len(feed_response["Messages"]) > 0:
+            self.logger.debug("Feed handling : %d" % (len(feed_response["Messages"])))
+            for msg in feed_response["Messages"]:
                 if "AmdmntRsn" in msg:
                     mndt_id_ = msg["OrgnlMndtId"]
-                    self.logger.debug("Feed update : %s" % (mndt_id_))
+                    self.logger.debug("Feed update : %s" % mndt_id_)
                     mndt_ = msg["Mndt"]
                     rsn_ = msg["AmdmntRsn"]
-                    documentFeed.updatedDocument(mndt_id_, mndt_, rsn_, msg["EvtTime"])
+                    document_feed.updatedDocument(mndt_id_, mndt_, rsn_, msg["EvtTime"])
                 elif "CxlRsn" in msg:
                     self.logger.debug("Feed cancel : %s" % (msg["OrgnlMndtId"]))
-                    documentFeed.cancelDocument(
+                    document_feed.cancelDocument(
                         msg["OrgnlMndtId"], msg["CxlRsn"], msg["EvtTime"]
                     )
                 else:
                     self.logger.debug("Feed create : %s" % (msg["Mndt"]))
-                    documentFeed.newDocument(msg["Mndt"], msg["EvtTime"])
+                    document_feed.newDocument(msg["Mndt"], msg["EvtTime"])
             response = requests.get(url=url, headers=self.client.headers())
             if "ApiErrorCode" in response.headers:
                 error = response.json()
                 raise Exception(
                     "Error invite : %s - %s" % (error["code"], error["message"])
                 )
-            feedResponse = response.json()
+            feed_response = response.json()
 
 
 class DocumentFeed:
-    def newDocument(self, doc, evtTime):
+    def newDocument(self, doc, evt_time):
         pass
 
-    def updatedDocument(self, original_mandate_number, doc, reason, evtTime):
+    def updatedDocument(self, original_mandate_number, doc, reason, evt_time):
         pass
 
-    def cancelDocument(self, docNumber, reason, evtTime):
+    def cancelDocument(self, doc_number, reason, evt_time):
         pass
