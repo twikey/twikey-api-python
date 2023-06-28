@@ -68,7 +68,7 @@ class Transaction(object):
         :return: struct containing identifier of the batch
         """
         url = self.client.instance_url("/collect")
-        data = { "ct": ct}
+        data = {"ct": ct}
         if colltndt:
             data["colltndt"] = colltndt
         try:
@@ -77,7 +77,7 @@ class Transaction(object):
                 url=url,
                 data=data,
                 headers=self.client.headers(),
-                timeout=60, # might be large batches
+                timeout=60,  # might be large batches
             )
             if "ApiErrorCode" in response.headers:
                 raise self.client.raise_error("Send batch", response)
@@ -97,7 +97,7 @@ class Transaction(object):
                 url=url,
                 data=pain008_xml,
                 headers=self.client.headers(),
-                timeout=60, # might be large batches
+                timeout=60,  # might be large batches
             )
             if "ApiErrorCode" in response.headers:
                 raise self.client.raise_error("Import batch", response)
@@ -116,7 +116,7 @@ class Transaction(object):
                 url=url,
                 data=reporting_content,
                 headers=self.client.headers(),
-                timeout=60, # might be large batches
+                timeout=60,  # might be large batches
             )
             if "ApiErrorCode" in response.headers:
                 raise self.client.raise_error("Import reporting", response)
