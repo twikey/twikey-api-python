@@ -9,10 +9,10 @@ class TestDocument(unittest.TestCase):
     @unittest.skipIf("TWIKEY_API_KEY" not in os.environ, "No TWIKEY_API_KEY set")
     def setUp(self):
         key = os.environ["TWIKEY_API_KEY"]
-        baseUrl = "https://api.beta.twikey.com"
+        base_url = "https://test.beta.twikey.com/api/creditor"
         if "TWIKEY_API_URL" in os.environ:
-            baseUrl = os.environ["TWIKEY_API_URL"]
-        self._twikey = twikey.TwikeyClient(key, baseUrl)
+            base_url = os.environ["TWIKEY_API_URL"]
+        self._twikey = twikey.TwikeyClient(key, base_url)
 
     def test_new_invite(self):
         ct = 1
@@ -43,15 +43,15 @@ class TestDocument(unittest.TestCase):
 
 
 class MyDocumentFeed(twikey.DocumentFeed):
-    def newDocument(self, doc, evt_time):
+    def new_document(self, doc, evt_time):
         print("Document created   ", doc["MndtId"], "@", evt_time)
 
-    def updatedDocument(self, original_number, doc, reason, evt_time):
+    def updated_document(self, original_number, doc, reason, evt_time):
         print(
             "Document updated   ", original_number, "b/c", reason["Rsn"], "@", evt_time
         )
 
-    def cancelDocument(self, number, reason, evt_time):
+    def cancelled_document(self, number, reason, evt_time):
         print("Document cancelled ", number, "b/c", reason["Rsn"], "@", evt_time)
 
 

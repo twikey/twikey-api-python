@@ -52,7 +52,7 @@ and configure your API key which you can find in the [Twikey merchant interface]
 import twikey
 
 APIKEY = 'apikey_as_found_in_twikey'
-twikeyClient = twikey.TwikeyClient(APIKEY, "https://api.beta.twikey.com")
+twikeyClient = twikey.TwikeyClient(APIKEY, "apiurl_as_found_in_twikey")
 ``` 
 
 ## Documents

@@ -13,12 +13,10 @@ class TestInvoices(unittest.TestCase):
     @unittest.skipIf("TWIKEY_API_KEY" not in os.environ, "No TWIKEY_API_KEY set")
     def setUp(self):
         key = os.environ["TWIKEY_API_KEY"]
-        if "TWIKEY_API_CT" in os.environ:
-            ct = os.environ["TWIKEY_API_CT"]
-        baseUrl = "https://api.beta.twikey.com"
+        base_url = "https://test.beta.twikey.com/api/creditor"
         if "TWIKEY_API_URL" in os.environ:
-            baseUrl = os.environ["TWIKEY_API_URL"]
-        self._twikey = twikey.TwikeyClient(key, baseUrl)
+            base_url = os.environ["TWIKEY_API_URL"]
+        self._twikey = twikey.TwikeyClient(key, base_url)
 
     def test_new_invite(self):
         invoice = self._twikey.invoice.create(
@@ -50,18 +48,21 @@ class TestInvoices(unittest.TestCase):
         print("New invoice to be paid @ " + invoice["url"])
 
     def test_feed(self):
-        self._twikey.invoice.feed(MyFeed(), "meta", "include", "lastpayment")
+        self._twikey.invoice.feed(MyFeed(), False, "meta", "include", "lastpayment")
 
 
 class MyFeed(twikey.InvoiceFeed):
     def invoice(self, invoice):
+        new_state = ""
         if invoice["state"] == "PAID":
-            newState = "PAID via " + invoice["lastpayment"]["method"]
+            lastpayment_ = invoice["lastpayment"]
+            if lastpayment_:
+                new_state = "PAID via " + lastpayment_["method"]
         else:
-            newState = "now has state " + invoice["state"]
+            new_state = "now has state " + invoice["state"]
         print(
             "Invoice update with number {0} {1} euro {2}".format(
-                invoice["number"], invoice["amount"], newState
+                invoice["number"], invoice["amount"], new_state
             )
         )
 

@@ -11,12 +11,12 @@ class TestTransaction(unittest.TestCase):
     @unittest.skipIf("TWIKEY_API_KEY" not in os.environ, "No TWIKEY_API_KEY set")
     def setUp(self):
         key = os.environ["TWIKEY_API_KEY"]
-        if "TWIKEY_API_CT" in os.environ:
-            ct = os.environ["TWIKEY_API_CT"]
-        baseUrl = "https://api.beta.twikey.com"
+        base_url = "https://test.beta.twikey.com/api/creditor"
+        if "CT" in os.environ:
+            self.ct = os.environ["CT"]
         if "TWIKEY_API_URL" in os.environ:
-            baseUrl = os.environ["TWIKEY_API_URL"]
-        self._twikey = twikey.TwikeyClient(key, baseUrl)
+            base_url = os.environ["TWIKEY_API_URL"]
+        self._twikey = twikey.TwikeyClient(key, base_url)
 
     def test_new_invite(self):
         tx = self._twikey.transaction.create(
@@ -29,6 +29,15 @@ class TestTransaction(unittest.TestCase):
             }
         )
         self.assertIsNotNone(tx)
+        self._twikey.transaction.batch_send(self.ct)
+        try:
+            self._twikey.transaction.batch_import("")
+        except twikey.client.TwikeyError as e:
+            self.assertEqual("invalid_file", e.get_code())
+        try:
+            self._twikey.transaction.reporting_import("")
+        except twikey.client.TwikeyError as e:
+            self.assertEqual("invalid_file", e.get_code())
 
     def test_feed(self):
         self._twikey.transaction.feed(MyFeed())

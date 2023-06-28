@@ -11,12 +11,10 @@ class TestPaylinks(unittest.TestCase):
     @unittest.skipIf("TWIKEY_API_KEY" not in os.environ, "No TWIKEY_API_KEY set")
     def setUp(self):
         key = os.environ["TWIKEY_API_KEY"]
-        if "TWIKEY_API_CT" in os.environ:
-            ct = os.environ["TWIKEY_API_CT"]
-        baseUrl = "https://api.beta.twikey.com"
+        base_url = "https://test.beta.twikey.com/api/creditor"
         if "TWIKEY_API_URL" in os.environ:
-            baseUrl = os.environ["TWIKEY_API_URL"]
-        self._twikey = twikey.TwikeyClient(key, baseUrl)
+            base_url = os.environ["TWIKEY_API_URL"]
+        self._twikey = twikey.TwikeyClient(key, base_url)
 
     def test_new_invite(self):
         tx = self._twikey.paylink.create(
