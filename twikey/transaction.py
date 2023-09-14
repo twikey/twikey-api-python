@@ -120,7 +120,6 @@ class Transaction(object):
             )
             if "ApiErrorCode" in response.headers:
                 raise self.client.raise_error("Import reporting", response)
-            return response.json()
         except requests.exceptions.RequestException as e:
             raise self.client.raise_error_from_request("Import reporting", e)
 

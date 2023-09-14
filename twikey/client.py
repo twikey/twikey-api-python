@@ -8,6 +8,7 @@ from .document import Document
 from .invoice import Invoice
 from .paylink import Paylink
 from .transaction import Transaction
+from .refund import Refund
 
 
 class TwikeyClient(object):
@@ -23,6 +24,7 @@ class TwikeyClient(object):
     transaction = None
     paylink = None
     invoice = None
+    refund = None
 
     def __init__(
         self,
@@ -40,6 +42,7 @@ class TwikeyClient(object):
         self.transaction = Transaction(self)
         self.paylink = Paylink(self)
         self.invoice = Invoice(self)
+        self.refund = Refund(self)
         self.logger = logging.getLogger(__name__)
 
     def instance_url(self, url=""):

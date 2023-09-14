@@ -32,11 +32,11 @@ class TestTransaction(unittest.TestCase):
         self._twikey.transaction.batch_send(self.ct)
         try:
             self._twikey.transaction.batch_import("")
-        except twikey.client.TwikeyError as e:
+        except twikey.TwikeyError as e:
             self.assertEqual("invalid_file", e.get_code())
         try:
             self._twikey.transaction.reporting_import("")
-        except twikey.client.TwikeyError as e:
+        except twikey.TwikeyError as e:
             self.assertEqual("invalid_file", e.get_code())
 
     def test_feed(self):
