@@ -1,5 +1,6 @@
 import requests
 
+
 class Refund(object):
     def __init__(self, client) -> None:
         super().__init__()

@@ -37,12 +37,15 @@ class TestPaylinks(unittest.TestCase):
         )
         self.assertIsNotNone(benef)
 
-        refund = self._twikey.refund.create(customer_number,{
-            "iban": "NL46ABNA8910219718",
-            "message": "Refund faulty item",
-            "ref": "My internal reference",
-            "amount": "10.99"
-        })
+        refund = self._twikey.refund.create(
+            customer_number,
+            {
+                "iban": "NL46ABNA8910219718",
+                "message": "Refund faulty item",
+                "ref": "My internal reference",
+                "amount": "10.99",
+            },
+        )
         self.assertIsNotNone(refund)
 
     def test_feed(self):
