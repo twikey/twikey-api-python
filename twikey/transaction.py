@@ -85,12 +85,12 @@ class Transaction(object):
         except requests.exceptions.RequestException as e:
             raise self.client.raise_error_from_request("Send batch", e)
 
-    def batch_import(self, pain008_xml):
+    def batch_import(self, ct, pain008_xml):
         """
         See https://www.twikey.com/api/#import-collection
         :param pain008_xml content of the pain008 file
         """
-        url = self.client.instance_url("/collect/import")
+        url = self.client.instance_url(f"/collect/import?ct={ct}")
         try:
             self.client.refresh_token_if_required()
             response = requests.post(
