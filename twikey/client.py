@@ -69,7 +69,14 @@ class TwikeyClient(object):
             struct.unpack(">I", _hash[offset : offset + 4])[0] & 0x7FFFFFFF
         ) % 100000000
 
-    def refreshTokenIfRequired(self):
+    def ping(self) -> bool:
+        try:
+            self.refresh_token_if_required()
+            return True
+        except Exception:
+            return False
+
+    def refresh_token_if_required(self):
         if self.lastLogin:
             self.logger.debug(
                 "Last authenticated with {} with {}".format(
