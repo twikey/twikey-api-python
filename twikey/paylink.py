@@ -10,7 +10,7 @@ class Paylink(object):
         url = self.client.instance_url("/payment/link")
         data = data or {}
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             response = requests.post(
                 url=url,
                 data=data,
@@ -26,7 +26,7 @@ class Paylink(object):
     def feed(self, paylink_feed):
         url = self.client.instance_url("/payment/link/feed")
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             response = requests.get(
                 url=url,
                 headers=self.client.headers(),

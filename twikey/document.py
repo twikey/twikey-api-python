@@ -13,7 +13,7 @@ class Document(object):
         url = self.client.instance_url("/invite")
         data = data or {}
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             response = requests.post(
                 url=url, data=data, headers=self.client.headers(), timeout=15
             )
@@ -29,7 +29,7 @@ class Document(object):
         url = self.client.instance_url("/sign")
         data = data or {}
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             response = requests.post(
                 url=url, data=data, headers=self.client.headers(), timeout=15
             )
@@ -45,7 +45,7 @@ class Document(object):
         url = self.client.instance_url("/mandate/update")
         data = data or {}
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             response = requests.post(
                 url=url, data=data, headers=self.client.headers(), timeout=15
             )
@@ -60,7 +60,7 @@ class Document(object):
             "/mandate?mndtId=" + mandate_number + "&rsn=" + reason
         )
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             response = requests.delete(
                 url=url, headers=self.client.headers(), timeout=15
             )
@@ -77,7 +77,7 @@ class Document(object):
             "/mandate?include=id&include=mandate&include=person"
         )
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             initheaders = self.client.headers()
             if start_position:
                 initheaders["X-RESUME-AFTER"] = str(start_position)
@@ -143,7 +143,7 @@ class Document(object):
     def update_customer(self, customer_id, data):
         url = self.client.instance_url("/customer/" + str(customer_id))
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             response = requests.patch(
                 url=url, params=data, headers=self.client.headers(), timeout=15
             )

@@ -26,7 +26,7 @@ class Refund(object):
         url = self.client.instance_url("/transfers/beneficiaries")
         data = data or {}
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             response = requests.post(
                 url=url,
                 data=data,
@@ -68,7 +68,7 @@ class Refund(object):
         data = dict(transactionDetails) or {}
         data["customerNumber"] = customerNumber
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             response = requests.post(
                 url=url,
                 data=data,
@@ -85,7 +85,7 @@ class Refund(object):
     def feed(self, refund_feed):
         url = self.client.instance_url("/transfer")
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             response = requests.get(
                 url=url,
                 headers=self.client.headers(),

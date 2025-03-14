@@ -15,7 +15,7 @@ class Transaction(object):
         url = self.client.instance_url("/transaction")
         data = data or {}
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             response = requests.post(
                 url=url,
                 data=data,
@@ -36,7 +36,7 @@ class Transaction(object):
         """
         url = self.client.instance_url("/transaction")
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             response = requests.get(
                 url=url,
                 headers=self.client.headers(),
@@ -72,7 +72,7 @@ class Transaction(object):
         if colltndt:
             data["colltndt"] = colltndt
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             response = requests.post(
                 url=url,
                 data=data,
@@ -92,7 +92,7 @@ class Transaction(object):
         """
         url = self.client.instance_url("/collect/import")
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             response = requests.post(
                 url=url,
                 data=pain008_xml,
@@ -111,7 +111,7 @@ class Transaction(object):
         """
         url = self.client.instance_url("/reporting")
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             response = requests.post(
                 url=url,
                 data=reporting_content,
