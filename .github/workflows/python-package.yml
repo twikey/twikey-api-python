@@ -13,25 +13,21 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python 3
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
-          python-version: 3.9
+          python-version: '>=3.9'
       - name: fmtcheck
         run: make fmtcheck
 
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [ 3.6, 3.7, 3.8, 3.9 ]
-
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: '>=3.9'
       - name: Upgrade pip and virtualenv to latest
         run: pip install --upgrade pip virtualenv
       - name: Test with pytest
