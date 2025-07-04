@@ -29,7 +29,7 @@ class TwikeyClient(object):
     def __init__(
         self,
         api_key,
-        base_url="https://api.twikey.com",
+        base_url="https://api.twikey.com/creditor",
         user_agent="twikey-python/v0.1.0",
         private_key=None,
     ) -> None:
@@ -69,7 +69,7 @@ class TwikeyClient(object):
             struct.unpack(">I", _hash[offset : offset + 4])[0] & 0x7FFFFFFF
         ) % 100000000
 
-    def refreshTokenIfRequired(self):
+    def refresh_token_if_required(self):
         if self.lastLogin:
             self.logger.debug(
                 "Last authenticated with {} with {}".format(

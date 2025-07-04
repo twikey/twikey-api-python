@@ -1,7 +1,9 @@
 import logging
 
 import requests
-
+from .model.invite_request import InviteRequest,InviteResponse
+from .model.fetch_request import FetchMandateRequest
+from .model.sign_request import SignRequest,SignResponse
 
 class Document(object):
     def __init__(self, client) -> None:
@@ -9,27 +11,27 @@ class Document(object):
         self.client = client
         self.logger = logging.getLogger(__name__)
 
-    def create(self, data):
+    def create(self, request: InviteRequest) -> InviteResponse:
         url = self.client.instance_url("/invite")
-        data = data or {}
+        data = request.to_request()
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             response = requests.post(
                 url=url, data=data, headers=self.client.headers(), timeout=15
             )
             if "ApiErrorCode" in response.headers:
                 raise self.client.raise_error("Invite", response)
             json_response = response.json()
-            self.logger.debug("Added new mandate : %s" % json_response["mndtId"])
-            return json_response
+            # self.logger.debug("Added new mandate : %s" % json_response["mndtId"])
+            return InviteResponse(**json_response)
         except requests.exceptions.RequestException as e:
             raise self.client.raise_error_from_request("Invite", e)
 
-    def sign(self, data):  # pylint: disable=W8106
+    def sign(self, request: SignRequest) -> SignResponse:  # pylint: disable=W8106
         url = self.client.instance_url("/sign")
-        data = data or {}
+        data = request.to_request()
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             response = requests.post(
                 url=url, data=data, headers=self.client.headers(), timeout=15
             )
@@ -37,15 +39,31 @@ class Document(object):
                 raise self.client.raise_error("Sign", response)
             json_response = response.json()
             self.logger.debug("Added new mandate : %s" % json_response["MndtId"])
-            return json_response
+            return SignResponse(**json_response)
         except requests.exceptions.RequestException as e:
             raise self.client.raise_error_from_request("Sign", e)
+
+    def fetch(self, request: FetchMandateRequest):
+        data = request.to_request()
+        url = self.client.instance_url("/mandate/detail")
+        try:
+            self.client.refresh_token_if_required()
+            response = requests.get(
+                url=url, params=data, headers=self.client.headers(), timeout=15
+            )
+            if "ApiErrorCode" in response.headers:
+                raise self.client.raise_error("detail", response)
+            json_response = response.json()
+            self.logger.debug("Mandate details : %s" % json_response)
+            return json_response
+        except requests.exceptions.RequestException as e:
+            raise self.client.raise_error_from_request("detail", e)
 
     def update(self, data):
         url = self.client.instance_url("/mandate/update")
         data = data or {}
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             response = requests.post(
                 url=url, data=data, headers=self.client.headers(), timeout=15
             )
@@ -60,7 +78,7 @@ class Document(object):
             "/mandate?mndtId=" + mandate_number + "&rsn=" + reason
         )
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             response = requests.delete(
                 url=url, headers=self.client.headers(), timeout=15
             )
@@ -77,7 +95,7 @@ class Document(object):
             "/mandate?include=id&include=mandate&include=person"
         )
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             initheaders = self.client.headers()
             if start_position:
                 initheaders["X-RESUME-AFTER"] = str(start_position)
@@ -143,7 +161,7 @@ class Document(object):
     def update_customer(self, customer_id, data):
         url = self.client.instance_url("/customer/" + str(customer_id))
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             response = requests.patch(
                 url=url, params=data, headers=self.client.headers(), timeout=15
             )

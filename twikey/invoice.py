@@ -13,7 +13,7 @@ class Invoice(object):
         url = self.client.instance_url("/invoice")
         data = data or {}
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             headers = self.client.headers("application/json")
             if origin:
                 headers["X-PARTNER"] = origin
@@ -57,7 +57,7 @@ class Invoice(object):
 
         url = self.client.instance_url("/invoice?include=customer" + _includes)
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             initheaders = self.client.headers()
             if start_position:
                 initheaders["X-RESUME-AFTER"] = str(start_position)

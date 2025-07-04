@@ -31,7 +31,7 @@ class TestTransaction(unittest.TestCase):
         self.assertIsNotNone(tx)
         self._twikey.transaction.batch_send(self.ct)
         try:
-            self._twikey.transaction.batch_import("")
+            self._twikey.transaction.batch_import(self.ct,"")
         except twikey.TwikeyError as e:
             self.assertEqual("invalid_file", e.get_code())
         try:

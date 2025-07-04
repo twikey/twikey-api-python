@@ -15,7 +15,7 @@ class Transaction(object):
         url = self.client.instance_url("/transaction")
         data = data or {}
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             response = requests.post(
                 url=url,
                 data=data,
@@ -36,7 +36,7 @@ class Transaction(object):
         """
         url = self.client.instance_url("/transaction")
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             response = requests.get(
                 url=url,
                 headers=self.client.headers(),
@@ -72,7 +72,7 @@ class Transaction(object):
         if colltndt:
             data["colltndt"] = colltndt
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             response = requests.post(
                 url=url,
                 data=data,
@@ -85,14 +85,14 @@ class Transaction(object):
         except requests.exceptions.RequestException as e:
             raise self.client.raise_error_from_request("Send batch", e)
 
-    def batch_import(self, pain008_xml):
+    def batch_import(self, ct, pain008_xml):
         """
         See https://www.twikey.com/api/#import-collection
         :param pain008_xml content of the pain008 file
         """
-        url = self.client.instance_url("/collect/import")
+        url = self.client.instance_url(f"/collect/import?ct={ct}")
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             response = requests.post(
                 url=url,
                 data=pain008_xml,
@@ -111,7 +111,7 @@ class Transaction(object):
         """
         url = self.client.instance_url("/reporting")
         try:
-            self.client.refreshTokenIfRequired()
+            self.client.refresh_token_if_required()
             response = requests.post(
                 url=url,
                 data=reporting_content,
