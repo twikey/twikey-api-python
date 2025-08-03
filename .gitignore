@@ -7,3 +7,5 @@ dist
 pyvenv.cfg
 .tox
 bin
+__pycache__
+*.pyc

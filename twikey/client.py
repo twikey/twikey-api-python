@@ -4,10 +4,10 @@ import logging
 
 import requests
 
-from .document import Document
-from .invoice import Invoice
-from .paylink import Paylink
-from .transaction import Transaction
+from .document import DocumentService
+from .invoice import InvoiceService
+from .transaction import TransactionService
+from .paylink import PaylinkService
 from .refund import Refund
 
 
@@ -38,10 +38,10 @@ class TwikeyClient(object):
         self.private_key = private_key
         self.api_base = base_url
         self.merchant_id = 0
-        self.document = Document(self)
-        self.transaction = Transaction(self)
-        self.paylink = Paylink(self)
-        self.invoice = Invoice(self)
+        self.document = DocumentService(self)
+        self.invoice = InvoiceService(self)
+        self.transaction = TransactionService(self)
+        self.paylink = PaylinkService(self)
         self.refund = Refund(self)
         self.logger = logging.getLogger(__name__)
 
@@ -68,6 +68,13 @@ class TwikeyClient(object):
         return (
             struct.unpack(">I", _hash[offset : offset + 4])[0] & 0x7FFFFFFF
         ) % 100000000
+
+    def ping(self) -> bool:
+        try:
+            self.refresh_token_if_required()
+            return True
+        except Exception:
+            return False
 
     def refresh_token_if_required(self):
         if self.lastLogin:

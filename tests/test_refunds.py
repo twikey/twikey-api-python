@@ -4,7 +4,7 @@ import unittest
 import uuid
 
 
-class TestPaylinks(unittest.TestCase):
+class TestRefunds(unittest.TestCase):
     _twikey = None
 
     ct = 1

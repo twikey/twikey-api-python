@@ -2,9 +2,7 @@ import os
 import twikey
 import unittest
 
-from twikey.model.invite_request import InviteRequest
-from twikey.model.fetch_request import FetchMandateRequest
-from twikey.model.sign_request import SignRequest
+from twikey.model.document_request import InviteRequest, SignRequest
 
 class TestDocument(unittest.TestCase):
     _twikey = None
@@ -25,8 +23,8 @@ class TestDocument(unittest.TestCase):
         inviteRequest = InviteRequest(
             ct=ct,
             email="no-reply@twikey.com",
-            firstname="Info",
-            lastname="Twikey",
+            first_name="Info",
+            last_name="Twikey",
             l="en",
             address="Abby road",
             city="Liverpool",
@@ -45,7 +43,7 @@ class TestDocument(unittest.TestCase):
                 SignRequest(
                     ct="772",
                     l="en",
-                    iban="BE36539660728150",
+                    iban="NL46ABNA8910219718",
                     bic="GKCCBEBB",
                     customer_number="CUST001",
                     email="joe.doe@gmail.com",
@@ -81,7 +79,7 @@ class TestDocument(unittest.TestCase):
                     place="Brussels",
                 )
             )
-            print("signed Response:", signed_mandate)
+            print("Imported mandate:", signed_mandate)
             self.assertIsNotNone(signed_mandate)
             self.assertIsNotNone(signed_mandate.MndtId)
         except twikey.client.TwikeyError as e:
@@ -102,16 +100,16 @@ class TestDocument(unittest.TestCase):
 
 
 class MyDocumentFeed(twikey.DocumentFeed):
-    def new_document(self, doc, evt_time):
-        print("Document created   ", doc["MndtId"], "@", evt_time)
+    def new_document(self, doc: twikey.Document, evt_time):
+        print("Document created   ", doc.mandate_id, "@", evt_time)
 
-    def updated_document(self, original_number, doc, reason, evt_time):
+    def updated_document(self, original_doc_number: str, doc: twikey.Document, reason: str, evt_time):
         print(
-            "Document updated   ", original_number, "b/c", reason["Rsn"], "@", evt_time
+            "Document updated   ", original_doc_number, "b/c", reason, "@", evt_time
         )
 
-    def cancelled_document(self, number, reason, evt_time):
-        print("Document cancelled ", number, "b/c", reason["Rsn"], "@", evt_time)
+    def cancelled_document(self, doc_number: str, reason: str, evt_time):
+        print("Document cancelled ", doc_number, "b/c", reason, "@", evt_time)
 
 
 if __name__ == "__main__":

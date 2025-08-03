@@ -10,7 +10,7 @@ def get_long_description():
 
 setup(
     name="twikey-api-python",
-    version="v0.2.1",
+    version="v0.2.3",
     description="Python interface with the Twikey api",
     author="Twikey",
     author_email="support@twikey.com",
@@ -22,8 +22,8 @@ setup(
     packages=find_packages(exclude=["tests", "tests.*"]),
     zip_safe=False,
     install_requires=[
-        'requests >= 2.20; python_version >= "3.0"',
-        'requests[security] >= 2.20; python_version < "3.0"',
+        'requests >= 2.32; python_version >= "3.0"',
+        'requests[security] >= 2.32; python_version < "3.0"',
     ],
     python_requires=">=3.6",
     project_urls={

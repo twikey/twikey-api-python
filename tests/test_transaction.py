@@ -2,6 +2,9 @@ import os
 import twikey
 import unittest
 
+from model.transaction_request import NewTransactionRequest
+from model.transaction_response import Transaction
+
 
 class TestTransaction(unittest.TestCase):
     _twikey = None
@@ -18,24 +21,31 @@ class TestTransaction(unittest.TestCase):
             base_url = os.environ["TWIKEY_API_URL"]
         self._twikey = twikey.TwikeyClient(key, base_url)
 
+    @unittest.skipIf("MNDTNUMBER" not in os.environ, "No MNDTNUMBER set")
     def test_new_invite(self):
         tx = self._twikey.transaction.create(
-            {
-                "mndtId": "CORERECURRENTNL16318",
-                "message": "Test Message",
-                "ref": "Merchant Reference",
-                "amount": 10.00,
-                "place": "Here",
-            }
+            NewTransactionRequest(
+                mndt_id = os.environ["MNDTNUMBER"],
+                message = "Test Message",
+                ref = "Merchant Reference",
+                amount = 10.00,
+                place = "Here",
+            )
         )
         self.assertIsNotNone(tx)
         self._twikey.transaction.batch_send(self.ct)
+
+    @unittest.skipIf("PAIN008" not in os.environ, "No PAIN008 (file) set")
+    def test_import_pain008(self):
         try:
-            self._twikey.transaction.batch_import(self.ct,"")
+            self._twikey.transaction.batch_import(self.ct,os.environ["PAIN008"])
         except twikey.TwikeyError as e:
             self.assertEqual("invalid_file", e.get_code())
+
+    @unittest.skipIf("CAMT053" not in os.environ, "No CAMT053 (file) set")
+    def test_import_camt053(self):
         try:
-            self._twikey.transaction.reporting_import("")
+            self._twikey.transaction.reporting_import(os.environ["CAMT053"])
         except twikey.TwikeyError as e:
             self.assertEqual("invalid_file", e.get_code())
 
@@ -44,30 +54,29 @@ class TestTransaction(unittest.TestCase):
 
 
 class MyFeed(twikey.TransactionFeed):
-    def transaction(self, transaction):
-        state = transaction["state"]
-        final = transaction["final"]
-        ref = transaction["ref"]
+    def transaction(self, transaction: Transaction):
+        state = transaction.state
+        final = transaction.final
+        ref = transaction.ref
         if not ref:
-            ref = transaction["msg"]
+            ref = transaction.msg
         _state = state
         _final = ""
         if state == "PAID":
             _state = "is now paid"
         elif state == "ERROR":
-            _state = "failed due to '" + transaction["bkmsg"] + "'"
+            _state = "failed due to '" + transaction.bkmsg + "'"
             if final:
                 # final means Twikey has gone through all dunning steps, but customer still did not pay
                 _final = "with no more dunning steps"
         print(
             "Transaction update",
-            transaction["amount"],
+            transaction.amount,
             "euro with",
             ref,
             _state,
             _final,
         )
-
 
 if __name__ == "__main__":
     unittest.main()
