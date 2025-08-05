@@ -126,7 +126,7 @@ class SignRequest(InviteRequest):
 
     """
     SignRequest holds the parameters needed to sign a mandate
-    through various signing methods supported by the Twikey API.
+    through various signing methods supported by the Twikey API, on top of the Invite request parameters
 
     Attributes:
         method (str): Method to sign (e.g., "sms", "digisign", "import", "itsme", "emachtiging", "paper").
@@ -186,15 +186,15 @@ class FetchMandateRequest:
     the details of a specific mandate from the Twikey API.
 
     Attributes:
-        mndt_Id (str): Mandate reference (Twikey's internal ID). Required.
+        mandate_number (str): Mandate reference (Twikey's internal ID). Required.
         force (bool, optional): If True, include non-signed mandate states in the response.
                                 Defaults to False.
     """
 
-    __slots__ = ["mndt_id", "force"]
+    __slots__ = ["mandate_number", "force"]
 
-    def __init__(self, mndt_id: str, force: bool = False):
-        self.mndt_id = mndt_id
+    def __init__(self, mandate_number: str, force: bool = False):
+        self.mandate_number = mandate_number
         self.force = force
 
     def to_request(self) -> dict:
@@ -205,7 +205,7 @@ class FetchMandateRequest:
         Returns:
             dict: Dictionary with keys mapped to API parameters.
         """
-        retval = {"mndtId": self.mndt_id}
+        retval = {"mndtId": self.mandate_number}
         if self.force:
             retval["force"] = "true"
         return retval
@@ -260,22 +260,22 @@ class MandateActionRequest:
     via the Twikey API.
 
     Attributes:
-        mndtId (str): Mandate reference (Twikey internal ID). Required.
-        invite (bool, optional): If True, send an invitation email to the customer.
-        reminder (bool, optional): If True, send a reminder email to the customer.
-        access (bool, optional): If True, send the customer a link to access their mandate.
-        automaticCheck (bool, optional): If True, enable automatic validation for B2B mandates.
-        manualCheck (bool, optional): If True, disable automatic validation for B2B mandates.
+        mandate_number (str): Mandate reference (Twikey internal ID). Required.
+        type (str): The action type to execute. Required.
+        reminder (str, values 1 to 4): If Type reminder is chosen, specifies which reminder is sent.
     """
 
-    __slots__ = ["mndt_id", "type", "reminder"]
+    __slots__ = ["mandate_number", "type", "reminder"]
 
     def __init__(self, **kwargs):
+        unknown_keys = set(kwargs) - set(self.__slots__)
+        if unknown_keys:
+            raise TypeError(f"Unknown parameter(s): {', '.join(unknown_keys)}")
         for attr in self.__slots__:
             setattr(self, attr, kwargs.get(attr))
 
     def to_request(self) -> dict:
-        retval = {"mndtId": self.mndt_id, "type": self.type}
+        retval = {"mndtId": self.mandate_number, "type": self.type}
         if self.reminder is not None and self.reminder != "":
             retval["reminder"]=self.reminder
         return retval
@@ -287,7 +287,7 @@ class UpdateMandateRequest:
     via the Twikey API.
 
     Attributes:
-        mndt_id (str): Mandate reference (Twikey internal ID). Required.
+        mandate_number (str): Mandate reference (Twikey internal ID). Required.
         ct (int, optional): Move the document to a different template ID (of the same type).
         state (str, optional): 'active' or 'passive' (activate or suspend mandate).
         mobile (str, optional): Customer's mobile number in E.164 format.
@@ -307,13 +307,12 @@ class UpdateMandateRequest:
     """
 
     __slots__ = [
-        "mndt_id", "ct", "state", "mobile", "iban", "bic", "customer_number",
+        "ct", "state", "mobile", "iban", "bic", "customer_number",
         "email", "first_name", "last_name", "company_name", "coc", "l",
         "address", "city", "zip", "country"
     ]
 
     _field_map = {
-        "mndt_id": "mndtId",
         "ct": "ct",
         "state": "state",
         "mobile": "mobile",
@@ -332,11 +331,11 @@ class UpdateMandateRequest:
         "country": "country",
     }
 
-    def __init__(self, mndt_id: str, **kwargs):
-        self.mndt_id = mndt_id
+    def __init__(self, **kwargs):
+        unknown_keys = set(kwargs) - set(self.__slots__)
+        if unknown_keys:
+            raise TypeError(f"Unknown parameter(s): {', '.join(unknown_keys)}")
         for attr in self.__slots__:
-            if attr == "mndt_id":
-                continue
             setattr(self, attr, kwargs.get(attr, None))
 
     def to_request(self) -> dict:
@@ -362,10 +361,10 @@ class PdfUploadRequest:
         bankSignature (str, optional): Includes the bank signature, typically "true" or "false". Defaults to "true".
     """
 
-    __slots__ = ["mndt_id", "pdf_path", "bank_signature"]
+    __slots__ = ["mandate_number", "pdf_path", "bank_signature"]
 
-    def __init__(self, mndt_id: str, pdf_path: str, bank_signature: bool = "true"):
-        self.mndt_id = mndt_id
+    def __init__(self, mandate_number: str, pdf_path: str, bank_signature: bool = "true"):
+        self.mandate_number = mandate_number
         self.pdf_path = pdf_path
         self.bank_signature = bank_signature
 
@@ -377,7 +376,7 @@ class PdfUploadRequest:
         Returns:
             dict: Dictionary of parameters for the PDF upload request.
         """
-        retval = {"mndtId": self.mndt_id, "pdfPath": self.pdf_path}
+        retval = {"mndtId": self.mandate_number, "pdfPath": self.pdf_path}
         if self.bank_signature is not None:
             retval["bankSignature"] = str(self.bank_signature)
         return retval

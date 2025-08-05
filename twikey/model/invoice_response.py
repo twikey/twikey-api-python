@@ -123,9 +123,9 @@ class Invoice:
             line_info += " - (none)\n"
 
         payment_info = "\nLast Payments:\n"
-        if self.last_payment:
-            for p in self.last_payment:
-                payment_info += " - " + ", ".join(f"{k}: {v}" for k, v in p.items()) + "\n"
+        if self.payment_events:
+            for p in self.payment_events:
+                payment_info += " - " + ", ".join(f"{k}: {v}" for k, v in p.action) + "\n"
         else:
             payment_info += " - (none)\n"
 

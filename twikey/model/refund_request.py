@@ -1,15 +1,15 @@
 class NewRefundRequest:
     """
-    Model om een terugbetaling (credit transfer) aan te maken.
+    model for creating a refund (credit transfer).
 
     Attributes:
-        customer_number (str): Klantnummer (sterk aanbevolen).
-        iban (str): IBAN van de begunstigde.
-        message (str): Bericht aan de begunstigde (max 140 karakters).
-        amount (float): Bedrag van de terugbetaling.
-        ref (str): Interne referentie.
-        date (str): Gewenste uitvoeringsdatum (ReqdExctnDt).
-        place (str): Plaats van betaling.
+        customer_number (str): The customer number (strongly recommended).
+        iban (str): Iban of the beneficiary.
+        message (str): Message to the creditor.
+        amount (float): Amount to be refunded.
+        ref (str): Intern reference.
+        date (str): execution date of the transaction (ReqdExctnDt).
+        place (str): Optional place.
     """
     __slots__ = ["customer_number", "iban", "message", "amount", "ref", "date", "place"]
 
@@ -33,11 +33,11 @@ class NewRefundRequest:
 
 class NewRefundBatchRequest:
     """
-    Model voor het aanmaken van een batch met terugbetalingen.
+    Model for creating a batch of refunds.
 
     Attributes:
-        ct (str): Profiel met afzenderrekening.
-        iban (str): Afwijkend afzenderrekeningnummer (optioneel).
+        ct (str): Profile containing the originating account.
+        iban (str): Originating account, if different from ct account (optional).
     """
     __slots__ = ["ct", "iban"]
 
@@ -54,11 +54,11 @@ class NewRefundBatchRequest:
 
 class RefundBatchStatusRequest:
     """
-    Model om details op te vragen van een batch terugbetalingen.
+    Model for requesting details of a batch of refunds.
 
     Attributes:
         id (str): Batch ID.
-        pmtinfid (str): Payment Info ID van de batch.
+        pmtinfid (str): Payment Info ID of the batch.
     """
     __slots__ = ["id", "pmtinfid"]
 
@@ -75,22 +75,22 @@ class RefundBatchStatusRequest:
 
 class NewBeneficiaryRequest:
     """
-    Model om een begunstigde toe te voegen aan een contract.
+    Model for adding a beneficiary.
 
     Attributes:
-        customer_number (str): Klantnummer.
-        name (str): Naam.
-        email (str): E-mailadres.
-        l (str): Taalcode.
-        mobile (str): GSM-nummer.
-        address (str): Adres.
-        city (str): Stad.
-        zip (str): Postcode.
-        country (str): Land.
-        company_name (str): Bedrijfsnaam.
-        vatno (str): BTW-nummer.
-        iban (str): IBAN van begunstigde (verplicht).
-        bic (str): BIC-code (optioneel).
+        customer_number (str): The customer number.
+        name (str): Firstname & lastname of the debtor.
+        email (str): Email of the debtor.
+        l (str): language of the customer.
+        mobile (str): Mobile number.
+        address (str): Address.
+        city (str): City of debtor.
+        zip (str): Zipcode of debtor.
+        country (str): ISO format.
+        company_name (str): The company name.
+        vatno (str): The enterprise number.
+        iban (str): IBAN of the beneficiary (required).
+        bic (str): BIC of the beneficiary (optional).
     """
     __slots__ = [
         "customer_number", "name", "email", "l", "mobile", "address",
@@ -117,11 +117,11 @@ class NewBeneficiaryRequest:
 
 class DisableBeneficiaryRequest:
     """
-    Model om een begunstigde te deactiveren op basis van IBAN.
+    Model for disabling a beneficiary based on IBAN.
 
     Attributes:
-        iban (str): IBAN van de begunstigde (verplicht).
-        customer_number (str): Klantnummer ter verduidelijking (optioneel).
+        iban (str): IBAN of the beneficiary (required).
+        customer_number (str): The customer number (optional).
     """
     __slots__ = ["iban", "customer_number"]
 

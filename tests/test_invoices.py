@@ -118,7 +118,7 @@ class TestInvoices(unittest.TestCase):
             )
         )
         self.assertIsNotNone(invoice)
-        self._twikey.invoice.delete(inoviceId=invoice.id)
+        self._twikey.invoice.delete(invoice.id)
 
     def test_details(self):
         invoice = self._twikey.invoice.details(

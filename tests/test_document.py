@@ -88,26 +88,27 @@ class TestDocument(unittest.TestCase):
         )
         print("Imported mandate:", signed_mandate)
         self.assertIsNotNone(signed_mandate)
-        self.assertIsNotNone(signed_mandate.MndtId)
+        self.assertIsNotNone(signed_mandate.mandate_number)
 
     def test_fetch(self):
         fetched_mandate = self._twikey.document.fetch(
             FetchMandateRequest(
-                mndt_id=os.environ["MNDTNUMBER"],
+                mandate_number=os.environ["MNDTNUMBER"],
                 force=True,
             )
         )
         self.assertIsNotNone(fetched_mandate)
 
     def test_query(self):
-        query = self._twikey.document.query(
+        result_set = self._twikey.document.query(
             QueryMandateRequest(
                 iban="BE51561419613262",
                 customer_number="customer123",
                 email="no-reply@twikey.com",
             )
         )
-        self.assertIsNotNone(query)
+        self.assertIsNotNone(result_set)
+        self.assertIsNotNone(result_set.mandates)
 
     def test_cancel(self):
         signed_mandate = self._twikey.document.sign(
@@ -151,12 +152,12 @@ class TestDocument(unittest.TestCase):
             )
         )
         self.assertIsNotNone(signed_mandate)
-        self._twikey.document.cancel(signed_mandate.MndtId,"hello")
+        self._twikey.document.cancel(signed_mandate.mandate_number,"reason for cancel")
 
     def test_action(self):
         self._twikey.document.action(
             MandateActionRequest(
-                mndt_id=os.environ["MNDTNUMBER"],
+                mandate_number=os.environ["MNDTNUMBER"],
                 type="reminder",
                 reminder="1"
             )
@@ -180,8 +181,8 @@ class TestDocument(unittest.TestCase):
             )
         )
         self._twikey.document.update(
+            invite.mandate_number,
             UpdateMandateRequest(
-                mndt_id=invite.mndtId,
                 ct=self.ct,
                 state="active",
                 mobile="+32499000001",
@@ -300,7 +301,7 @@ class TestDocument(unittest.TestCase):
         )
         self.assertIsNotNone(signed_mandate)
 
-        access_url = self._twikey.document.customer_access(mndt_id=signed_mandate.MndtId)
+        access_url = self._twikey.document.customer_access(signed_mandate.mandate_number)
         self.assertIsNotNone(access_url)
 
     def test_feed(self):
@@ -309,7 +310,7 @@ class TestDocument(unittest.TestCase):
 
 class MyDocumentFeed(twikey.DocumentFeed):
     def new_document(self, doc: twikey.Document, evt_time):
-        print("Document created   ", doc.mandate_id, "@", evt_time)
+        print("Document created   ", doc.mandate_number, "@", evt_time)
 
     def updated_document(self, original_doc_number: str, doc: twikey.Document, reason: str, author: str, evt_time):
         print("Document updated   ", original_doc_number, "b/c", reason, "@", evt_time)

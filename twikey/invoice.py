@@ -14,6 +14,26 @@ class InvoiceService(object):
         self.logger = logging.getLogger(__name__)
 
     def create(self, request: InvoiceRequest, origin=False, purpose=False, manual=False) -> Invoice:
+        """
+        See https://www.twikey.com/api/#create-invoice
+
+        Create a new invoice via a POST request to the API.
+
+        This method sends the provided request payload to the corresponding endpoint
+        and parses the JSON response into a response model. Typically used to initiate
+        actions like inviting a customer, creating a mandate, or generating a payment link.
+        Raises an error if the API response contains an error code or the request fails.
+
+        Args:
+            request (InvoiceRequest): A model representing the payload to send.
+
+        Returns:
+            Invoice: A structured response object representing the server’s reply.
+
+        Raises:
+            TwikeyAPIError: If the API returns an error or the request fails.
+        """
+
         url = self.client.instance_url("/invoice")
         data = request.to_request()
         try:
@@ -40,6 +60,25 @@ class InvoiceService(object):
             raise self.client.raise_error_from_request("Create invoice", e)
 
     def update(self, request: UpdateInvoiceRequest) -> Invoice:
+        """
+        See https://www.twikey.com/api/#update-invoice
+
+        Send a PUT request to update existing invoice details.
+
+        This endpoint allows modifying invoice information such as title,
+        pdf, or linked references. Only provide parameters for fields you
+        wish to update. Some fields may have special behavior or limitations depending on the object state.
+
+        Args:
+            request (UpdateInvoiceRequest): A model representing the payload to send.
+
+        Returns:
+            Invoice: A structured response object representing the server’s reply.
+
+        Raises:
+            TwikeyError: If the API returns an error or the request fails.
+        """
+
         data = request.to_request()
         url = self.client.instance_url("/invoice/" + data.get("id"))
         try:
@@ -56,9 +95,24 @@ class InvoiceService(object):
 
     def details(self, request: DetailsRequest) -> Invoice:
         """
+        See https://www.twikey.com/api/#invoice-details
+
         Retrieves the details of a specific invoice by ID or number,
         optionally including lastpayment, meta, or customer data.
+
+        This method queries the Twikey API for the latest details related to the mandate, invoice, etc. for the
+        provided identifier. Typically used for querying status based on ID, reference, or mandate.
+
+        Args:
+            request (DetailsRequest): An object representing information for identifying the invoice.
+
+        Returns:
+            Invoice: A structured response object representing the server’s reply.
+
+        Raises:
+            TwikeyError: If the API call fails or the identifier is invalid.
         """
+
         data = request.to_request()
         url = self.client.instance_url(f"/invoice/{request.id}")
         includes = data.get("include")
@@ -78,16 +132,23 @@ class InvoiceService(object):
 
     def action(self, request: ActionRequest):
         """
-        Performs an action on a specific invoice.
+        See https://www.twikey.com/api/#action-on-invoice
+
+        Trigger a specific action on an existing invoice.
+
+        This endpoint allows initiating predefined actions related to an invoice, such as sending
+        an invitation or reminder. The action type must be explicitly provided in the request.
 
         Args:
-            request (InvoiceActionRequest): The action request with invoice ID and type.
+            request (ActionRequest): The action request with invoice ID and type.
 
-        Supported types:
-            'email', 'sms', 'reminder', 'smsreminder',
-            'letter', 'letterWithInvoice', 'invoice',
-            'reoffer', 'peppol'
+        Returns:
+            None
+
+        Raises:
+            TwikeyError: If the API returns an error or the request fails.
         """
+
         invoice_id = request.id
         url = self.client.instance_url(f"/invoice/{invoice_id}/action")
         payload = request.to_request()
@@ -103,18 +164,20 @@ class InvoiceService(object):
 
     def upload_ubl(self, request: UblUploadRequest) -> Invoice:
         """
-        Uploads a UBL invoice (XML) to Twikey.
+        See https://www.twikey.com/api/#upload-ubl
+
+        add new invoices via an UBL file during a POST request to the API.
 
         Args:
-            request (UblUploadRequest): The UBL upload request containing the XML payload
-                and optional headers like X-MANUAL and X-INVOICE-ID.
+            request (UblUploadRequest): object representing the payload for the request containing the file
 
         Returns:
-            UblUploadResponse: Parsed invoice response object.
+            Invoice: A structured response object representing the server’s reply.
 
         Raises:
-            TwikeyError: If Twikey returns an error or network fails.
+            Exception: If the request to the feed endpoint fails or response is invalid.
         """
+
         url = self.client.instance_url("/invoice/ubl")
         try:
             self.client.refresh_token_if_required()
@@ -134,8 +197,27 @@ class InvoiceService(object):
         except requests.exceptions.RequestException as e:
             raise self.client.raise_error_from_request("UBL upload", e)
 
-    def delete(self, inoviceId: str):
-        url = self.client.instance_url("/invoice/" + inoviceId)
+    def delete(self, invoice_id: str):
+        """
+        See https://www.twikey.com/api/#delete-invoice
+
+        Sends a DELETE request to delete an invoice on the Twikey API.
+
+        This method allows the creditor to cancel/delete a resource by providing the unique ID.
+        Typically used to delete/cancel object like an agreement, an invoice, or a payment link.
+        Raises an error if the API response contains an error code or the request fails.
+
+        Args:
+            invoice_id (str): The unique identifier of the invoice to cancel.
+
+        Returns:
+            None
+
+        Raises:
+            TwikeyAPIError: If the request fails or the response contains an API error code.
+        """
+
+        url = self.client.instance_url("/invoice/" + invoice_id)
         try:
             self.client.refresh_token_if_required()
             headers = self.client.headers("application/json")
@@ -148,6 +230,8 @@ class InvoiceService(object):
 
     def bulk_create(self, request: BulkInvoiceRequest):
         """
+        See https://www.twikey.com/api/#bulk-create-invoices
+
         Creates multiple invoices in a single batch upload.
 
         Args:
@@ -159,6 +243,7 @@ class InvoiceService(object):
         Raises:
             TwikeyError: If the bulk creation fails or the server returns an error.
         """
+
         url = self.client.instance_url("/invoice/bulk")
         try:
             self.client.refresh_token_if_required()
@@ -177,8 +262,10 @@ class InvoiceService(object):
         except requests.exceptions.RequestException as e:
             raise self.client.raise_error_from_request("bulk create invoices", e)
 
-    def bulk_details(self, batch_id: str):
+    def bulk_details(self, batch_id: str) -> BulkBatchDetailsResponse:
         """
+        See https://www.twikey.com/api/#bulk-batch-details
+
         Retrieves the result of a bulk invoice upload by batch ID.
 
         Args:
@@ -210,7 +297,28 @@ class InvoiceService(object):
         except requests.exceptions.RequestException as e:
             raise self.client.raise_error_from_request("bulk batch details", e)
 
-    def feed(self, invoice_feed:InvoiceFeed, start_position=False, *includes):
+    def feed(self, invoice_feed: InvoiceFeed, start_position=False, *includes):
+        """
+        See https://www.twikey.com/api/#invoice-feed
+
+        Fetches the latest invoice feed including new, updated, or cancelled invoices.
+
+        This method retrieves events from Twikey since the last sync. These events may concern
+        mandates, invoices, payment link, etc. It's typically
+        used to synchronize your CRM or ERP system with the current state on the Twikey
+        platform. Can be triggered periodically or via webhook.
+
+        Args:
+            invoice_feed (InvoiceFeed): Custom handler class with methods for processing
+                new, updated, or cancelled invoice events.
+
+        Returns:
+            None
+
+        Raises:
+            Exception: If the request to the feed endpoint fails or response is invalid.
+        """
+
         _includes = ""
         for include in includes:
             _includes += "&include=" + include
@@ -260,13 +368,3 @@ class InvoiceService(object):
         except requests.exceptions.RequestException as e:
             raise self.client.raise_error_from_request("Invoice feed", e)
 
-    def geturl(self, invoice_id):
-        if ".beta." in self.client.api_base:
-            return "https://app.beta.twikey.com/%s/%s" % (
-                self.client.merchant_id,
-                invoice_id,
-            )
-        return "https://app.twikey.com/%s/%s" % (
-            self.client.merchant_id,
-            invoice_id,
-        )

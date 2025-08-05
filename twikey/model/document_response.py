@@ -1,20 +1,21 @@
+from array import ArrayType
 from datetime import datetime
 
 class Document:
     __slots__ = [
-        "mandate_id", "state", "local_instream", "sequence_type", "sign_date",
+        "mandate_number", "state", "type", "sequence_type", "sign_date",
         "debtor_name", "debtor_street", "debtor_city", "debtor_zip", "debtor_country", "btw_nummer",
-        "country_of_residence", "debtor_email", "customer_number", "debtor_iban", "Debtor_bic", "debtor_bank",
-        "referenced_document", "supplementary_data"
+        "country_of_residence", "debtor_email", "customer_number", "iban", "bic", "debtor_bank",
+        "contract_number", "supplementary_data"
     ]
 
     def __init__(self, **kwargs):
         mndt = kwargs.get("mandate", {})
         headers = kwargs.get("headers", {})
 
-        self.mandate_id = mndt.get("MndtId")
+        self.mandate_number = mndt.get("MndtId")
         self.state = headers.get("X-STATE")
-        self.local_instream = mndt.get("LclInstrm")
+        self.type = mndt.get("LclInstrm")
 
         ocrncs = mndt.get("Ocrncs", {})
         self.sequence_type = ocrncs.get("SeqTp")
@@ -34,13 +35,13 @@ class Document:
         self.debtor_email = ctct.get("EmailAdr")
         self.customer_number = ctct.get("Othr")
 
-        self.debtor_iban = mndt.get("DbtrAcct")
+        self.iban = mndt.get("DbtrAcct")
 
         agent = mndt.get("DbtrAgt", {}).get("FinInstnId", {})
-        self.Debtor_bic = agent.get("BICFI")
+        self.bic = agent.get("BICFI")
         self.debtor_bank = agent.get("Nm")
 
-        self.referenced_document = mndt.get("RfrdDoc")
+        self.contract_number = mndt.get("RfrdDoc")
 
         # Convert SplmtryData into a dict for easier use
         self.supplementary_data = {
@@ -49,7 +50,6 @@ class Document:
         }
 
     def __str__(self):
-
         base_info = "\n".join(
             f"{slot:<22}: {getattr(self, slot, None)}" for slot in self.__slots__ if slot != "supplementary_data"
         )
@@ -62,6 +62,7 @@ class Document:
 
     def __repr__(self):
         return self.__str__()
+
 
 class DocumentFeed:
     def start(self, position: str, number_of_updates: int):
@@ -82,7 +83,8 @@ class DocumentFeed:
         """
         pass
 
-    def updated_document(self, original_doc_number: str, doc: Document, reason: str, author:str, evt_time: datetime) -> bool:
+    def updated_document(self, original_doc_number: str, doc: Document, reason: str, author: str,
+                         evt_time: datetime) -> bool:
         """
         Handle an update of a document
         :param original_doc_number: original reference to the document
@@ -93,7 +95,7 @@ class DocumentFeed:
         """
         pass
 
-    def cancelled_document(self, doc_number: str, reason: str, author:str, evt_time: datetime) -> bool:
+    def cancelled_document(self, doc_number: str, reason: str, author: str, evt_time: datetime) -> bool:
         """
         Handle an cancelled document
         :param doc_number: reference to the document
@@ -103,44 +105,49 @@ class DocumentFeed:
         """
         pass
 
+
 class InviteResponse:
-    __slots__ = ["url", "key", "mndtId"]
+    __slots__ = ["url", "key", "mandate_number"]
 
     def __init__(self, **kwargs):
-        for attr in self.__slots__:
-            setattr(self, attr, kwargs.get(attr))
+        self.url = kwargs.get("url")
+        self.key = kwargs.get("key")
+        self.mandate_number = kwargs.get("mndtId")
 
     def __str__(self):
-        return f"InviteResponse url={self.url}, key={self.key}, mndtId={self.mndtId}"
+        return f"InviteResponse url={self.url}, key={self.key}, mndtId={self.mandate_number}"
 
 
 class SignResponse:
-    __slots__ = ["MndtId","url"]
+    __slots__ = ["mandate_number", "url"]
 
     def __init__(self, **kwargs):
-        for attr in self.__slots__:
-            setattr(self, attr, kwargs.get(attr))
+        self.mandate_number = kwargs.get("MndtId")
+        self.url = kwargs.get("url")
 
     def __str__(self):
         if self.url:
-            return f"SignResponse url={self.url} mndtId={self.MndtId}\n"
-        return f"SignResponse mndtId={self.MndtId}\n"
+            return f"SignResponse url={self.url} mndtId={self.mandate_number}\n"
+        return f"SignResponse mandate_number={self.mandate_number}\n"
 
 
 class QueryMandateResponse:
     __slots__ = [
-        "id", "type", "state", "suspended", "pdf_available", "mandate_number",
-        "contract_number", "ct", "sign_date", "iban", "bic"
+        "mandates"
     ]
 
-    def __init__(self, data: dict):
-        for key in self.__slots__:
-            if "_" in key:
-                prefix, suffix = key.split("_")
-                datakey = f"{prefix}{suffix.title()}"
-                setattr(self, key, data.get(datakey))
-            else:
-                setattr(self, key, data.get(key))
+    def __init__(self, contracts: ArrayType):
+        self.mandates = []
+        for contract in contracts:
+            doc = Document()
+            doc.type = contract.get("type")
+            doc.state = contract.get("state")
+            doc.mandate_number = contract.get("mandateNumber")
+            doc.contract_number = contract.get("contractNumber")
+            doc.sign_date = contract.get("signDate")
+            doc.iban = contract.get("iban")
+            doc.bic = contract.get("bic")
+            self.mandates.append(doc)
 
     def __str__(self):
         return "\n".join(f"{slot:<18}: {getattr(self, slot, None)}" for slot in self.__slots__)

@@ -34,9 +34,9 @@ class PaymentLinkRequest:
     """
 
     __slots__ = [
-        "title", "amount", "customerNumber", "email", "lastname", "firstname", "companyName",
-        "coc", "l", "mobile", "ct", "remittance", "ref", "redirectUrl", "place", "expiry", "sendInvite",
-        "address", "city", "zip", "country", "txref", "method", "invoice", "isTemplate", "custom"
+        "title", "amount", "customer_number", "email", "last_name", "first_name", "company_name",
+        "coc", "l", "mobile", "ct", "remittance", "ref", "redirect_url", "place", "expiry", "send_invite",
+        "address", "city", "zip", "country", "txref", "method", "invoice", "is_template", "custom"
     ]
 
     def __init__(self, **kwargs):
@@ -53,13 +53,32 @@ class PaymentLinkRequest:
         en verwijdert None of lege waarden.
         """
         retval = {}
-        for attr in self.__slots__:
-            value = getattr(self, attr, None)
-            if value not in [None, ""]:
-                parts = attr.split("_")
-                key = parts[0] + "".join(part.capitalize() for part in parts[1:])
-                retval[key] = value
-
+        retval["title"]=self.title
+        retval["amount"]=self.amount
+        retval["customerNumber"]=self.customer_number
+        retval["email"]=self.email
+        retval["lastName"]=self.last_name
+        retval["firstName"]=self.first_name
+        retval["companyName"]=self.company_name
+        retval["coc"]=self.coc
+        retval["l"]=self.l
+        retval["mobile"]=self.mobile
+        retval["ct"]=self.ct
+        retval["remittance"]=self.remittance
+        retval["ref"]=self.ref
+        retval["redirectUrl"]=self.redirect_url
+        retval["place"]=self.place
+        retval["expiry"]=self.expiry
+        retval["sendInvite"]=self.send_invite
+        retval["address"]=self.address
+        retval["city"]=self.city
+        retval["zip"]=self.zip
+        retval["country"]=self.country
+        retval["txref"]=self.txref
+        retval["method"]=self.method
+        retval["invoice"]=self.invoice
+        retval["isTemplate"]=self.is_template
+        retval["custom"]=self.custom
         return retval
 
 class PaymentLinkStatusRequest:

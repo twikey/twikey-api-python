@@ -17,7 +17,7 @@ class Refund:
         return f"Refund ID: {self.id}, Amount: {self.amount}, Message: {self.msg}"
 
 
-class CreditTransferBatch:
+class RefundBatch:
     """
     Represents a single entry in a Batch details response.
 
@@ -36,7 +36,7 @@ class CreditTransferBatch:
         return f"Refund ID: {self.id}, pmtinfid: {self.pmtinfid}, entries: {self.entries}"
 
 
-class BeneficiaryEntry:
+class Beneficiary:
     """
     Represents a single entry in a get Beneficiary response.
 
@@ -72,7 +72,7 @@ class GetbeneficiarieResponse:
     __slots__ = ["results"]
 
     def __init__(self, raw: list):
-        self.results = [BeneficiaryEntry(item) for item in raw]
+        self.results = [Beneficiary(item) for item in raw]
 
     def __str__(self):
         return "\n".join(str(item) for item in self.results)

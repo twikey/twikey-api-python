@@ -1,16 +1,16 @@
 class NewTransactionRequest:
     """
-    NewTransactionRequest functioneert als model om een request voor een nieuwe transactie op te bouwen.
+    NewTransactionRequest Allows you to create a new transaction
 
     Attributes:
-        mndt_id (str): Mandaatreferentie (verplicht).
-        date (str): Datum van de transactie (optioneel, ISO-formaat YYYY-MM-DD).
-        reqcolldt (str): Gewenste incassodatum (optioneel).
-        message (str): Bericht op bankafschrift (verplicht, max 140 tekens).
-        ref (str): Interne referentie (optioneel).
-        amount (float): Te innen bedrag (verplicht).
-        place (str): Plaats van transactie (optioneel).
-        refase2e (bool): Gebruik ref als E2E-id (optioneel).
+        mndt_id (str): Mandate reference (required).
+        date (str): Transaction date (optional, ISO format YYYY-MM-DD).
+        reqcolldt (str): Desired collection date (optional).
+        message (str): Message on bank statement (required, max. 140 characters).
+        ref (str): Internal reference (optional).
+        amount (float): Amount to be collected (required).
+        place (str): Place of transaction (optional).
+        refase2e (bool): Use ref as E2E ID (optional).
     """
 
     __slots__ = ["mndt_id", "date", "reqcolldt", "message", "ref", "amount", "place", "refase2e"]
@@ -24,10 +24,10 @@ class NewTransactionRequest:
 
     def to_request(self) -> dict:
         """
-        Zet de NewTransactionRequest om naar een dictionary geschikt voor API-verzending.
+        Turns the request object into a dictionary for posting
 
         Returns:
-            dict: De request payload met juiste veldnamen.
+            dict: request payload using the correct fieldnames
         """
         retval = {}
         for attr in self.__slots__:
@@ -76,10 +76,10 @@ class StatusRequest:
 
     def to_request(self) -> dict:
         """
-        Zet de DeleteInvoiceRequest om naar een dictionary geschikt voor API-verzending.
+        Turns the object into a dictionary for posting
 
         Returns:
-            dict: De request payload met juiste veldnamen.
+            dict: request payload using the correct fieldnames
         """
         retval = {}
         for attr in self.__slots__:
@@ -93,11 +93,11 @@ class StatusRequest:
 
 class ActionRequest:
     """
-    ActionRequest fungeert als model voor het uitvoeren van een actie op een bestaande factuur.
+    ActionRequest object containing the values to run an action on a specific transaction.
 
     Attributes:
-        id (str): Het unieke ID van de factuur waarop de actie wordt uitgevoerd (verplicht).
-        action (str): Het type actie dat moet worden uitgevoerd (verplicht).
+        id (str): The unique ID of the invoice on which the action is performed (required).
+        action (str): The type of action to be performed (required).
     """
 
     __slots__ = ["id", "action"]
@@ -108,10 +108,10 @@ class ActionRequest:
 
     def to_request(self) -> dict:
         """
-        Zet de ActionRequest om naar een dictionary geschikt voor API-verzending.
+        Turns the object into a dictionary for posting
 
         Returns:
-            dict: De request payload met juiste veldnamen.
+            dict: request payload using the correct fieldnames
         """
         retval = {}
         for attr in self.__slots__:
@@ -125,15 +125,15 @@ class ActionRequest:
 
 class UpdateRequest:
     """
-    NewTransactionRequest functioneert als model om een request voor een update op een transactie op te bouwen.
+    UpdateRequest contains the values to update an action on a specific transaction.
 
     Attributes:
         id (str): transaction ID.
-        reqcolldt (str): Gewenste incassodatum (optioneel).
-        message (str): Bericht op bankafschrift (optioneel, max 140 tekens).
-        ref (str): Interne referentie (optioneel).
-        amount (float): Te innen bedrag (optioneel).
-        place (str): Plaats van transactie (optioneel).
+        reqcolldt (str): Desired collection date (optional).
+        message (str): Message on bank statement (optional, max. 140 characters).
+        ref (str): Internal reference (optional).
+        amount (float): Amount to be collected (optional).
+        place (str): Place of transaction (optional).
     """
 
     __slots__ = ["id", "reqcolldt", "message", "ref", "amount", "place"]
@@ -144,10 +144,10 @@ class UpdateRequest:
 
     def to_request(self) -> dict:
         """
-        Zet de NewTransactionRequest om naar een dictionary geschikt voor API-verzending.
+        Turns the object into a dictionary for posting
 
         Returns:
-            dict: De request payload met juiste veldnamen.
+            dict: request payload using the correct fieldnames
         """
         retval = {}
         for attr in self.__slots__:
@@ -161,14 +161,14 @@ class UpdateRequest:
 
 class RefundRequest:
     """
-    NewTransactionRequest functioneert als model om een request voor een update op een transactie op te bouwen.
+    RefundRequest object containing the values to refund a specific transaction.
 
     Attributes:
         id (str): transaction ID.
-        message (str): Bericht op bankafschrift (optioneel, max 140 tekens).
-        amount (float): Te innen bedrag (optioneel).
-        ref (str): Interne referentie (optioneel).
-        place (str): Plaats van transactie (optioneel).
+        message (str): Message on bank statement (optional, max. 140 characters).
+        amount (float): Amount to be collected (optional).
+        ref (str): Reference (optional).
+        place (str): Place of transaction (optional).
         iban (str): IBAN of the customer.
         bic (str): BIC/SWIFT code of the bank.
     """
@@ -181,10 +181,10 @@ class RefundRequest:
 
     def to_request(self) -> dict:
         """
-        Zet de RefundRequest om naar een dictionary geschikt voor API-verzending.
+        Turns the object into a dictionary for posting
 
         Returns:
-            dict: De request payload met juiste veldnamen.
+            dict: request payload using the correct fieldnames
         """
         retval = {}
         for attr in self.__slots__:

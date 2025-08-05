@@ -277,7 +277,7 @@ class DetailsRequest:
 class ActionRequest:
     """
     Attributes:
-        id (str): UUID van de factuur die verwijderd moet worden. (required)
+        id (str): UUID of an invoice. (required)
 
     """
 
