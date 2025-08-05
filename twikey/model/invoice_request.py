@@ -231,35 +231,11 @@ class UpdateInvoiceRequest:
             value = getattr(self, attr, None)
             if value is not None and value != "":
                 key = self._field_map.get(attr, attr)
-                retval[key] = value
+                if isinstance(value, date):
+                    retval[key] = value.isoformat()
+                else:
+                    retval[key] = value
         return retval
-
-
-class DeleteRequest:
-    """
-    DeleteInvoiceRequest bevat enkel het ID van de factuur die verwijderd moet worden.
-
-    Attributes:
-        id (str): UUID van de factuur die verwijderd moet worden. (required)
-    """
-
-    __slots__ = ["id"]
-
-    def __init__(self, **kwargs):
-        self.id = kwargs.get("id")
-
-    def to_request(self) -> dict:
-        """
-        Zet de DeleteInvoiceRequest om naar een dictionary geschikt voor API-verzending.
-
-        Returns:
-            dict: De request payload met juiste veldnamen.
-        """
-        retval = {}
-        if self.id is not None and self.id != "":
-            retval["id"] = self.id
-        return retval
-
 
 class DetailsRequest:
     """
@@ -388,26 +364,3 @@ class BulkInvoiceRequest:
             list: A list of dictionaries representing each invoice request.
         """
         return [inv.to_request() for inv in self.invoices]
-
-
-class BulkBatchDetailsRequest:
-    """
-    BulkBatchDetailsRequest represents a request to retrieve the result of a bulk invoice upload.
-
-    Attributes:
-        batch_id (str): The batch ID returned by the bulk create endpoint.
-    """
-
-    __slots__ = ["batch_id"]
-
-    def __init__(self, batch_id: str):
-        self.batch_id = batch_id
-
-    def to_request(self) -> dict:
-        """
-        Converts the request to a dictionary suitable for use as query parameters.
-
-        Returns:
-            dict: Dictionary with 'batchId' as key.
-        """
-        return {"batchId": self.batch_id}

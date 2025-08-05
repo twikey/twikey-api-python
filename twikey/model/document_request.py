@@ -168,12 +168,15 @@ class SignRequest(InviteRequest):
         for attr in self.__slots__:
             value = getattr(self, attr, None)
             if value is not None and value != "":
-                key = self._field_map.get(attr, attr)  # map attr name if exists
-                # Convert boolean to "true"/"false" string if needed
-                if isinstance(value, bool):
-                    retval[key] = "true" if value else "false"
+                if attr == "method":
+                    retval["method"] = value.value
                 else:
-                    retval[key] = value
+                    key = self._field_map.get(attr, attr)  # map attr name if exists
+                    # Convert boolean to "true"/"false" string if needed
+                    if isinstance(value, bool):
+                        retval[key] = "true" if value else "false"
+                    else:
+                        retval[key] = value
         return retval
 
 

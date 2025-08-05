@@ -34,10 +34,9 @@ class PaymentLinkRequest:
     """
 
     __slots__ = [
-        "email",
-        "message",
-        "ref",
-        "amount",
+        "title", "amount", "customerNumber", "email", "lastname", "firstname", "companyName",
+        "coc", "l", "mobile", "ct", "remittance", "ref", "redirectUrl", "place", "expiry", "sendInvite",
+        "address", "city", "zip", "country", "txref", "method", "invoice", "isTemplate", "custom"
     ]
 
     def __init__(self, **kwargs):

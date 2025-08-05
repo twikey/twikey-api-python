@@ -1,4 +1,4 @@
-class RefundStatusEntry:
+class Refund:
     """
     Represents a single entry in a Refund status response.
 
@@ -6,7 +6,7 @@ class RefundStatusEntry:
     """
 
     __slots__ = [
-        "id", "iban", "bic", "amount", "msg", "place", "ref", "date"
+        "id", "iban", "bic", "amount", "msg", "place", "ref", "date", "state", "bkdate"
     ]
 
     def __init__(self, raw: dict):
@@ -17,7 +17,7 @@ class RefundStatusEntry:
         return f"Refund ID: {self.id}, Amount: {self.amount}, Message: {self.msg}"
 
 
-class CreditTransferEntry:
+class CreditTransferBatch:
     """
     Represents a single entry in a Batch details response.
 
@@ -76,3 +76,21 @@ class GetbeneficiarieResponse:
 
     def __str__(self):
         return "\n".join(str(item) for item in self.results)
+
+
+class RefundFeed:
+    def refund(self, refund: Refund):
+        """
+        :refund: – Class object containing
+            * id: Twikey id
+            * iban: IBAN of the beneficiary
+            * bic: BIC of the beneficiary
+            * amount: Amount of the refund
+            * msg: Message for the beneficiary
+            * place: Optional place
+            * ref: Your reference
+            * date: Date when the transfer was requested
+            * state: Paid
+            * bkdate: Date when the transfer was done
+        """
+        pass

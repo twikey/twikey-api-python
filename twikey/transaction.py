@@ -1,8 +1,8 @@
 import requests
 
-from model.transaction_request import NewTransactionRequest, StatusRequest, QueryTransactionsRequest, ActionRequest, \
+from .model.transaction_request import NewTransactionRequest, StatusRequest, QueryTransactionsRequest, ActionRequest, \
     UpdateRequest, RefundRequest, RemoveTransactionRequest
-from model.transaction_response import Transaction, TransactionStatusResponse, RefundResponse
+from .model.transaction_response import Transaction, TransactionStatusResponse, RefundResponse
 
 
 class TransactionService(object):
@@ -64,7 +64,6 @@ class TransactionService(object):
         See https://www.twikey.com/api/#query-transactions
         Perform a GET request to retrieve all created transactions starting from a specific transaction ID.
         Args:
-            api_key (str): Twikey API key for authentication.
             from_id (int): Starting transaction ID (required).
             mndt_id (str, optional): Optional mandate reference to filter results.
         Returns:
@@ -109,7 +108,6 @@ class TransactionService(object):
         See https://www.twikey.com/api/#update-transaction
         Updates an existing transaction by sending a PUT request.
         Parameters:
-            api_key (str): Twikey API key used for authentication
             data (dict): Must contain 'id'; may include 'amount', 'ref', 'message',
                          'place', or 'reqcolldt'
         Returns:
@@ -132,7 +130,6 @@ class TransactionService(object):
         Creates a refund for a given transaction. If the beneficiary account does not exist yet,
         it will be registered to the customer using the mandate IBAN or the one provided.
         Parameters:
-            api_key (str): Twikey API key used for authentication
             data (dict): Must include 'id', 'message', and 'amount'. May include
                          'ref', 'place', 'iban', or 'bic'
         Returns:
@@ -160,7 +157,6 @@ class TransactionService(object):
         Removes a transaction that has not yet been sent to the bank.
         At least one of 'id' or 'ref' must be provided.
         Parameters:
-            api_key (str): Twikey API key used for authentication
             data (dict): Dictionary with 'id' and/or 'ref' to identify the transaction
         Returns:
             None: A successful deletion returns HTTP 204 with no content
@@ -243,8 +239,8 @@ class TransactionService(object):
             with open(pain008_xml, "rb") as file:
                 response = requests.post(
                     url=url,
-                        data=file,
-                        headers=self.client.headers("text/xml"),
+                    data=file,
+                    headers=self.client.headers("text/xml"),
                     timeout=60,  # might be large batches
                 )
                 if "ApiErrorCode" in response.headers:

@@ -2,10 +2,10 @@ import logging
 
 import requests
 
-from .model.invoice_request import InvoiceRequest, UpdateInvoiceRequest, DetailsRequest, ActionRequest, UblUploadRequest, \
-    DeleteRequest, BulkInvoiceRequest, BulkBatchDetailsRequest
+from .model.invoice_request import InvoiceRequest, UpdateInvoiceRequest, DetailsRequest, ActionRequest, \
+    UblUploadRequest, BulkInvoiceRequest
 from .model.invoice_response import Invoice, BulkInvoiceResponse, \
-    BulkBatchDetailsResponse
+    BulkBatchDetailsResponse, InvoiceFeed
 
 class InvoiceService(object):
     def __init__(self, client) -> None:
@@ -134,9 +134,8 @@ class InvoiceService(object):
         except requests.exceptions.RequestException as e:
             raise self.client.raise_error_from_request("UBL upload", e)
 
-    def delete(self, request: DeleteRequest):
-        data = request.to_request()
-        url = self.client.instance_url("/invoice/" + data.get("id"))
+    def delete(self, inoviceId: str):
+        url = self.client.instance_url("/invoice/" + inoviceId)
         try:
             self.client.refresh_token_if_required()
             headers = self.client.headers("application/json")
@@ -178,12 +177,12 @@ class InvoiceService(object):
         except requests.exceptions.RequestException as e:
             raise self.client.raise_error_from_request("bulk create invoices", e)
 
-    def bulk_details(self, request: BulkBatchDetailsRequest):
+    def bulk_details(self, batch_id: str):
         """
         Retrieves the result of a bulk invoice upload by batch ID.
 
         Args:
-            request (BulkBatchDetailsRequest): The request containing the batch ID.
+            batch_id (str): The batch ID.
 
         Returns:
             BulkBatchDetailsResponse: Contains a list of statuses per invoice.
@@ -191,8 +190,7 @@ class InvoiceService(object):
         Raises:
             TwikeyError: If the request fails or returns an unexpected status.
         """
-        params = request.to_request()
-        url = self.client.instance_url(f"/invoice/bulk?batchId={params.get('batchId')}")
+        url = self.client.instance_url(f"/invoice/bulk?batchId={batch_id}")
         try:
             self.client.refresh_token_if_required()
             headers = self.client.headers("application/json")
@@ -202,7 +200,7 @@ class InvoiceService(object):
                 timeout=15
             )
             if response.status_code == 409:
-                self.logger.debug("bulk batch still processing: %s", request.batch_id)
+                self.logger.debug("bulk batch still processing: %s", batch_id)
                 return None
             elif response.status_code == 200:
                 self.logger.debug("bulk batch details response: %s", response.text)
@@ -212,11 +210,10 @@ class InvoiceService(object):
         except requests.exceptions.RequestException as e:
             raise self.client.raise_error_from_request("bulk batch details", e)
 
-    def feed(self, invoice_feed, start_position=False, *includes):
+    def feed(self, invoice_feed:InvoiceFeed, start_position=False, *includes):
         _includes = ""
         for include in includes:
             _includes += "&include=" + include
-
 
         url = self.client.instance_url("/invoice?include=customer" + _includes)
         try:

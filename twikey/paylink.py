@@ -1,7 +1,7 @@
 import requests
 
-from model.paylink_request import PaymentLinkRequest, PaymentLinkStatusRequest, PaymentLinkRefundRequest
-from model.paylink_response import CreatedPaylinkResponse, Paylink, PaylinkFeed
+from .model.paylink_request import PaymentLinkRequest, PaymentLinkStatusRequest, PaymentLinkRefundRequest
+from .model.paylink_response import CreatedPaylinkResponse, Paylink, PaylinkFeed
 
 
 class PaylinkService(object):
@@ -28,7 +28,8 @@ class PaylinkService(object):
             )
             if "ApiErrorCode" in response.headers:
                 raise self.client.raise_error("Create paylink", response)
-            return CreatedPaylinkResponse(response.json())
+            json_response = response.json()
+            return CreatedPaylinkResponse(json_response)
         except requests.exceptions.RequestException as e:
             raise self.client.raise_error_from_request("Create paylink", e)
 
@@ -81,7 +82,7 @@ class PaylinkService(object):
         except requests.exceptions.RequestException as e:
             raise self.client.raise_error_from_request("Update transaction", e)
 
-    def remove(self, link_id:int):
+    def remove(self, link_id: int):
         """
         See https://www.twikey.com/api/#remove-paymentlink
         Removes a payment link that has not yet been sent to the bank.

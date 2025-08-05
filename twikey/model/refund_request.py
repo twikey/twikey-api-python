@@ -1,223 +1,143 @@
-from dataclasses import dataclass, fields
-from typing import Optional
-
-
-@dataclass()
-class CreateCreditTransferRequest:
+class NewRefundRequest:
     """
-    :params:
-        customer_number: str : The customer number (strongly recommended)
-        iban: Optional[str] : Iban of the beneficiary (must be active)
-        message: str : Message to the creditor (max 140 characters)
-        amount: float : Amount to be refunded
-        ref: Optional[str] : Reference of the transaction
-        date: Optional[str] : Required execution date of the transaction (ReqdExctnDt)
-        place: Optional[str] : Optional place
-    :returns:
-        dict : Payload for the POST /creditor/transfer request
+    Model om een terugbetaling (credit transfer) aan te maken.
+
+    Attributes:
+        customer_number (str): Klantnummer (sterk aanbevolen).
+        iban (str): IBAN van de begunstigde.
+        message (str): Bericht aan de begunstigde (max 140 karakters).
+        amount (float): Bedrag van de terugbetaling.
+        ref (str): Interne referentie.
+        date (str): Gewenste uitvoeringsdatum (ReqdExctnDt).
+        place (str): Plaats van betaling.
     """
-    customer_number: str
-    message: str
-    amount: float
-    iban: Optional[str] = None
-    ref: Optional[str] = None
-    date: Optional[str] = None
-    place: Optional[str] = None
+    __slots__ = ["customer_number", "iban", "message", "amount", "ref", "date", "place"]
 
-    def to_request(self) -> dict:
-        def to_camel(s):
-            parts = s.split('_')
-            return parts[0] + ''.join(w.title() for w in parts[1:])
-
-        retval = {}
-        for f in fields(self):
-            value = getattr(self, f.name)
-            if value is not None:
-                retval[to_camel(f.name)] = value
-        return retval
-
-
-# @dataclass()
-# class GetCreditTransferFeedRequest:
-#     """
-#     :params:
-#         include_seq: Optional[bool] : Whether to include sequence numbers
-#     :returns:
-#         dict : Query parameters for GET /creditor/transfer
-#     """
-#     include_seq: Optional[bool] = False
-
-
-@dataclass()
-class CreditTransferDetailRequest:
-    """
-    :params:
-        id: str : ID (E2E identifier) of the created refund
-    :returns:
-        dict : Query parameters for GET /creditor/transfer/detail
-    """
-    id: str
+    def __init__(self, **kwargs):
+        unknown_keys = set(kwargs) - set(self.__slots__)
+        if unknown_keys:
+            raise TypeError(f"Unknown parameter(s): {', '.join(unknown_keys)}")
+        for attr in self.__slots__:
+            setattr(self, attr, kwargs.get(attr))
 
     def to_request(self) -> dict:
         retval = {}
-        for f in fields(self):
-            value = getattr(self, f.name)
-            if value is not None:
-                retval[f.name] = value
+        for attr in self.__slots__:
+            value = getattr(self, attr, None)
+            if value not in [None, ""]:
+                parts = attr.split("_")
+                key = parts[0] + ''.join(p.title() for p in parts[1:])
+                retval[key] = value
         return retval
 
 
-@dataclass()
-class RemoveCreditTransferRequest:
+class NewRefundBatchRequest:
     """
-    :params:
-        id: str : ID of the created refund
-    :returns:
-        dict : Query parameters for DELETE /creditor/transfer
+    Model voor het aanmaken van een batch met terugbetalingen.
+
+    Attributes:
+        ct (str): Profiel met afzenderrekening.
+        iban (str): Afwijkend afzenderrekeningnummer (optioneel).
     """
-    id: str
+    __slots__ = ["ct", "iban"]
+
+    def __init__(self, **kwargs):
+        unknown_keys = set(kwargs) - set(self.__slots__)
+        if unknown_keys:
+            raise TypeError(f"Unknown parameter(s): {', '.join(unknown_keys)}")
+        for attr in self.__slots__:
+            setattr(self, attr, kwargs.get(attr))
+
+    def to_request(self) -> dict:
+        return {attr: getattr(self, attr) for attr in self.__slots__ if getattr(self, attr) is not None}
+
+
+class RefundBatchStatusRequest:
+    """
+    Model om details op te vragen van een batch terugbetalingen.
+
+    Attributes:
+        id (str): Batch ID.
+        pmtinfid (str): Payment Info ID van de batch.
+    """
+    __slots__ = ["id", "pmtinfid"]
+
+    def __init__(self, **kwargs):
+        unknown_keys = set(kwargs) - set(self.__slots__)
+        if unknown_keys:
+            raise TypeError(f"Unknown parameter(s): {', '.join(unknown_keys)}")
+        for attr in self.__slots__:
+            setattr(self, attr, kwargs.get(attr))
+
+    def to_request(self) -> dict:
+        return {attr: getattr(self, attr) for attr in self.__slots__ if getattr(self, attr) is not None}
+
+
+class NewBeneficiaryRequest:
+    """
+    Model om een begunstigde toe te voegen aan een contract.
+
+    Attributes:
+        customer_number (str): Klantnummer.
+        name (str): Naam.
+        email (str): E-mailadres.
+        l (str): Taalcode.
+        mobile (str): GSM-nummer.
+        address (str): Adres.
+        city (str): Stad.
+        zip (str): Postcode.
+        country (str): Land.
+        company_name (str): Bedrijfsnaam.
+        vatno (str): BTW-nummer.
+        iban (str): IBAN van begunstigde (verplicht).
+        bic (str): BIC-code (optioneel).
+    """
+    __slots__ = [
+        "customer_number", "name", "email", "l", "mobile", "address",
+        "city", "zip", "country", "company_name", "vatno", "iban", "bic"
+    ]
+
+    def __init__(self, **kwargs):
+        unknown_keys = set(kwargs) - set(self.__slots__)
+        if unknown_keys:
+            raise TypeError(f"Unknown parameter(s): {', '.join(unknown_keys)}")
+        for attr in self.__slots__:
+            setattr(self, attr, kwargs.get(attr))
 
     def to_request(self) -> dict:
         retval = {}
-        for f in fields(self):
-            value = getattr(self, f.name)
-            if value is not None:
-                retval[f.name] = value
+        for attr in self.__slots__:
+            value = getattr(self, attr, None)
+            if value not in [None, ""]:
+                parts = attr.split("_")
+                key = parts[0] + ''.join(p.title() for p in parts[1:])
+                retval[key] = value
         return retval
 
 
-@dataclass()
-class CreateTransferBatchRequest:
-    """
-    :params:
-        ct: str : Profile containing the originating account
-        iban: Optional[str] : Originating account if different from ct account
-    :returns:
-        dict : Query parameters for POST /creditor/transfer/complete
-    """
-    ct: str
-    iban: Optional[str] = None
-
-    def to_request(self) -> dict:
-        retval = {}
-        for f in fields(self):
-            value = getattr(self, f.name)
-            if value is not None:
-                retval[f.name] = value
-        return retval
-
-
-@dataclass()
-class TransferBatchDetailsRequest:
-    """
-    :params:
-        id: Optional[str] : Batch ID
-        pmtinfid: Optional[str] : Payment Info ID of the batch
-    :returns:
-        dict : Query parameters for GET /creditor/transfer/complete
-    """
-    id: Optional[str] = None
-    pmtinfid: Optional[str] = None
-
-    def to_request(self) -> dict:
-        retval = {}
-        for f in fields(self):
-            value = getattr(self, f.name)
-            if value is not None:
-                retval[f.name] = value
-        return retval
-
-
-@dataclass()
-class GetBeneficiariesRequest:
-    """
-    :params:
-        with_address: bool : Whether to include addresses in the response
-    :returns:
-        dict : Query parameters for GET /creditor/transfers/beneficiaries
-    """
-    with_address: bool = True
-
-    def to_request(self) -> dict:
-        def to_camel(s):
-            parts = s.split('_')
-            return parts[0] + ''.join(w.title() for w in parts[1:])
-
-        retval = {}
-        for f in fields(self):
-            value = getattr(self, f.name)
-            if value is not None:
-                retval[to_camel(f.name)] = value
-        return retval
-
-
-@dataclass()
-class AddBeneficiaryRequest:
-    """
-    :params:
-        customer_number: Optional[str]
-        name: Optional[str]
-        email: Optional[str]
-        l: Optional[str]
-        mobile: Optional[str]
-        address: Optional[str]
-        city: Optional[str]
-        zip: Optional[str]
-        country: Optional[str]
-        company_name: Optional[str]
-        vatno: Optional[str]
-        iban: str
-        bic: Optional[str]
-    :returns:
-        dict : Payload for POST /creditor/transfers/beneficiaries
-    """
-    customer_number: Optional[str] = None
-    name: Optional[str] = None
-    email: Optional[str] = None
-    l: Optional[str] = None
-    mobile: Optional[str] = None
-    address: Optional[str] = None
-    city: Optional[str] = None
-    zip: Optional[str] = None
-    country: Optional[str] = None
-    company_name: Optional[str] = None
-    vatno: Optional[str] = None
-    iban: str = ""
-    bic: Optional[str] = None
-
-    def to_request(self) -> dict:
-        def to_camel(s):
-            parts = s.split('_')
-            return parts[0] + ''.join(w.title() for w in parts[1:])
-
-        retval = {}
-        for f in fields(self):
-            value = getattr(self, f.name)
-            if value is not None:
-                retval[to_camel(f.name)] = value
-        return retval
-
-
-@dataclass()
 class DisableBeneficiaryRequest:
     """
-    :params:
-        iban: str : IBAN of the beneficiary to disable
-        customer_number: Optional[str] : Customer number for disambiguation
-    :returns:
-        dict : For DELETE /creditor/transfers/beneficiaries/{IBAN}?customerNumber={customerNumber}
+    Model om een begunstigde te deactiveren op basis van IBAN.
+
+    Attributes:
+        iban (str): IBAN van de begunstigde (verplicht).
+        customer_number (str): Klantnummer ter verduidelijking (optioneel).
     """
-    iban: str
-    customer_number: Optional[str] = None
+    __slots__ = ["iban", "customer_number"]
+
+    def __init__(self, **kwargs):
+        unknown_keys = set(kwargs) - set(self.__slots__)
+        if unknown_keys:
+            raise TypeError(f"Unknown parameter(s): {', '.join(unknown_keys)}")
+        for attr in self.__slots__:
+            setattr(self, attr, kwargs.get(attr))
 
     def to_request(self) -> dict:
-        def to_camel(s):
-            parts = s.split('_')
-            return parts[0] + ''.join(w.title() for w in parts[1:])
-
         retval = {}
-        for f in fields(self):
-            value = getattr(self, f.name)
-            if value is not None:
-                retval[to_camel(f.name)] = value
+        for attr in self.__slots__:
+            value = getattr(self, attr, None)
+            if value not in [None, ""]:
+                parts = attr.split("_")
+                key = parts[0] + ''.join(p.title() for p in parts[1:])
+                retval[key] = value
         return retval

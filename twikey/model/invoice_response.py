@@ -1,4 +1,26 @@
 class PaymentEvent:
+    """
+    Represents a single payment event or attempt for an invoice.
+
+    Attributes:
+        method (str): The method used for the payment. Can be:
+            - 'sdd' for Direct Debit
+            - 'paylink' for payment via link
+            - 'transfer' for wire transfer
+            - 'manual' for manual payment (marked by a user)
+        action (str): The action received, either 'payment' or 'payment_fail'.
+        id (str, optional): Transaction ID for direct debit (sdd).
+        e2e (str, optional): End-to-End identifier for SEPA direct debit.
+        pmtinf (str, optional): Payment information for direct debit.
+        iban (str, optional): The IBAN from which the amount was paid (for 'sdd' and 'transfer').
+        bic (str, optional): BIC code of the paying account (for 'transfer').
+        rc (str, optional): Return code from the bank (e.g., 'PAID' or error code) for 'sdd'.
+        link (str, optional): Payment link identifier for 'paylink'.
+        msg (str, optional): Invoice title ('transfer') or user message ('manual').
+        date (str): Date of the action (e.g., '2025-08-01' or ISO timestamp for 'paylink'/'manual').
+        double (bool): True if this was a duplicate payment (already paid), otherwise False.
+    """
+
     __slots__ = (
         "action", "double", "id", "e2e", "pmtinf", "method", "mndtid",
         "iban", "rc", "date", "bic", "msg", "link"

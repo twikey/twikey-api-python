@@ -167,20 +167,26 @@ class DocumentService(object):
                         mndt_ = msg["Mndt"]
                         amdmnt_rsn_ = msg["AmdmntRsn"]
                         rsn_ = amdmnt_rsn_.get("Rsn")
-                        author_ = amdmnt_rsn_.get("Rsn")
+                        author_ = amdmnt_rsn_["Orgtr"]["CtctDtls"]["EmailAdr"]
                         at_ = msg["EvtTime"]
+                        if at_.endswith("Z"):
+                            at_ = at_.replace("Z", "+00:00")
                         error = document_feed.updated_document(mndt_id_, Document(mandate=mndt_), rsn_, author_, datetime.fromisoformat(at_))
                     elif "CxlRsn" in msg:
                         mndt_ = msg["OrgnlMndtId"]
                         cxl_rsn_ = msg["CxlRsn"]
                         rsn_ = cxl_rsn_.get("Rsn")
-                        author_ = cxl_rsn_.get("Rsn")
+                        author_ = cxl_rsn_["Orgtr"]["CtctDtls"]["EmailAdr"]
                         at_ = msg["EvtTime"]
+                        if at_.endswith("Z"):
+                            at_ = at_.replace("Z", "+00:00")
                         self.logger.debug("Feed cancel : %s" % mndt_)
                         error = document_feed.cancelled_document(mndt_, rsn_, author_, datetime.fromisoformat(at_))
                     else:
                         mndt_ = msg["Mndt"]
                         at_ = msg["EvtTime"]
+                        if at_.endswith("Z"):
+                            at_ = at_.replace("Z", "+00:00")
                         self.logger.debug("Feed create : %s" % mndt_)
                         error = document_feed.new_document(Document(mandate=mndt_), datetime.fromisoformat(at_))
                     if error:
@@ -250,7 +256,7 @@ class DocumentService(object):
         try:
             self.client.refresh_token_if_required()
             response = requests.post(
-                url=url, data={"mndt_id": mndt_id}, headers=self.client.headers(), timeout=15
+                url=url, data={"mndtId": mndt_id}, headers=self.client.headers(), timeout=15
             )
             if "ApiErrorCode" in response.headers:
                 raise self.client.raise_error("Cancel", response)
