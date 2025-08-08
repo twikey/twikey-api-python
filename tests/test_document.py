@@ -98,6 +98,8 @@ class TestDocument(unittest.TestCase):
             )
         )
         self.assertIsNotNone(fetched_mandate)
+        self.assertIsNotNone(fetched_mandate.mandate_number)
+        self.assertIsNotNone(fetched_mandate.iban)
 
     def test_query(self):
         result_set = self._twikey.document.query(
@@ -247,7 +249,7 @@ class TestDocument(unittest.TestCase):
         self.assertIsNotNone(signed_mandate)
         self._twikey.document.upload_pdf(
             PdfUploadRequest(
-                mndt_id=signed_mandate.MndtId,
+                mandate_number=signed_mandate.MndtId,
                 pdf_path=os.environ["PDF_FILE"],
                 bank_signature=False,
             )
