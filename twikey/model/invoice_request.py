@@ -141,7 +141,6 @@ class Customer:
                 data[key] = value
         return data
 
-
 class LineItem:
     """
     LineItem represents a line in the invoice.
@@ -185,7 +184,6 @@ class LineItem:
                 key = self._field_map.get(attr, attr)
                 data[key] = value
         return data
-
 
 class UpdateInvoiceRequest:
     """
@@ -273,7 +271,6 @@ class DetailsRequest:
 
         return {"include": includes} if includes else {}
 
-
 class ActionRequest:
     """
     Attributes:
@@ -301,7 +298,6 @@ class ActionRequest:
             retval["type"] = self.type.value
         return retval
 
-
 class ActionType(Enum):
     EMAIL = "email"
     SMS = "sms"
@@ -313,7 +309,6 @@ class ActionType(Enum):
     REOFFER = "reoffer"
     PEPPOL = "peppol"
     PAYMENTPLAN = "paymentplan"
-
 
 class UblUploadRequest:
     """
@@ -341,7 +336,6 @@ class UblUploadRequest:
         if self.invoice_id:
             headers["X-INVOICE-ID"] = self.invoice_id
         return headers
-
 
 class BulkInvoiceRequest:
     """

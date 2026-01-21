@@ -1,3 +1,6 @@
+from datetime import datetime
+from typing import Dict, Any
+
 class PaymentEvent:
     """
     Represents a single payment event or attempt for an invoice.
@@ -60,7 +63,6 @@ class PaymentEvent:
         self.iban:str = kwargs.get("iban")
         self.bic:str = kwargs.get("bic")
         self.msg:str = kwargs.get("msg")
-
 
 class Invoice:
     """
@@ -154,6 +156,102 @@ class InvoiceFeed:
         """
         Handle an invoice of the feed
         :param invoice: the updated invoice
+        :return: error from the function or False to continue
+        """
+        pass
+
+class Origin:
+    __slots__ = ("object", "id", "number", "ref")
+
+    def __init__(self, object: str, id: str, number: str, ref: str):
+        self.object = object
+        self.id = id
+        self.number = number
+        self.ref = ref
+
+class Gateway:
+    __slots__ = ("id", "name", "type", "iban")
+
+    def __init__(self, id: int, name: str, type: str, iban: str):
+        self.id = id
+        self.name = name
+        self.type = type
+        self.iban = iban
+
+class EventError:
+    __slots__ = (
+        "code",
+        "description",
+        "category",
+        "externalCode",
+        "action",
+        "actionStep",
+    )
+
+    def __init__(
+            self,
+            code: str,
+            description: str,
+            category: str,
+            externalCode: str,
+            action: str,
+            actionStep: int,
+    ):
+        self.code = code
+        self.description = description
+        self.category = category
+        self.externalCode = externalCode
+        self.action = action
+        self.actionStep = actionStep
+
+class Event:
+    __slots__ = (
+        "eventId",
+        "eventType",
+        "occurredAt",
+        "amount",
+        "currency",
+        "origin",
+        "gateway",
+        "details",
+        "error",
+    )
+
+    def __init__(
+            self,
+            eventId: str,
+            eventType: str,
+            occurredAt: datetime,
+            amount: int,
+            currency: str,
+            origin: Origin,
+            gateway: Gateway,
+            details: Dict[str, Any],
+            error: EventError = None,
+    ):
+        self.eventId = eventId
+        self.eventType = eventType
+        self.occurredAt = occurredAt
+        self.amount = amount
+        self.currency = currency
+        self.origin = origin
+        self.gateway = gateway
+        self.details = details
+        self.error = error
+
+class PaymentFeed:
+    def start(self, position: str, lenght: int):
+        """
+        Allow storing the start of the feed
+        :param position: position where the feed started
+        :param lenght: number of items in the feed
+        """
+        pass
+
+    def payment(self, payment: Event):
+        """
+        Handle an payment of the feed
+        :param payment: the updated payment
         :return: error from the function or False to continue
         """
         pass

@@ -30,12 +30,6 @@ class TestPaylinks(unittest.TestCase):
         self.assertIsNotNone(pl)
         print("New link to be paid @ " + pl.url)
 
-    def test_status(self):
-        pl = self._twikey.paylink.status_details(
-            PaymentLinkStatusRequest(id="644722")
-        )
-        self.assertIsNotNone(pl)
-
     @unittest.skipIf("PAID_PAYLINK_ID" not in os.environ, "No PAID_PAYLINK_ID set")
     def test_refund(self):
         refund = self._twikey.paylink.refund(

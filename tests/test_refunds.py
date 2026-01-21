@@ -149,9 +149,15 @@ class TestRefunds(unittest.TestCase):
         )
         self.assertIsNotNone(refund)
 
+        ct = 1
+        if "CT" in os.environ:
+            ct = os.environ["CT"]
+        else:
+            self.skipTest("No CT set")
+
         credit_transfers = self._twikey.refund.create_batch(
             NewRefundBatchRequest(
-                ct="772",
+                ct=ct,
                 iban="NL36RABO0115531548",
             )
         )

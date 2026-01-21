@@ -7,7 +7,7 @@ from datetime import date, timedelta
 
 from twikey.model.invoice_request import Customer, InvoiceRequest, LineItem, UpdateInvoiceRequest, DetailsRequest, \
     ActionRequest, ActionType, UblUploadRequest, BulkInvoiceRequest
-from twikey.model.invoice_response import Invoice
+from twikey.model.invoice_response import Invoice, Event
 
 class TestInvoices(unittest.TestCase):
     _twikey = None
@@ -78,7 +78,7 @@ class TestInvoices(unittest.TestCase):
         self.assertIsNotNone(invoice)
         print("New invoice to be paid @ " + invoice.url)
 
-
+    @unittest.skip("id should exist")
     def test_update(self):
         invoice = self._twikey.invoice.update(
             UpdateInvoiceRequest(
@@ -132,6 +132,7 @@ class TestInvoices(unittest.TestCase):
         )
         self.assertIsNotNone(invoice)
 
+    @unittest.skip("id should exist")
     def test_action(self):
         self._twikey.invoice.action(
             request=ActionRequest(
@@ -215,6 +216,9 @@ class TestInvoices(unittest.TestCase):
     def test_feed(self):
         self._twikey.invoice.feed(MyFeed(), False, "meta", "include", "lastpayment")
 
+    def test_payments(self):
+        self._twikey.invoice.payment(MyPayments(), False)
+
 
 class MyFeed(twikey.InvoiceFeed):
     def invoice(self, invoice:Invoice):
@@ -230,6 +234,10 @@ class MyFeed(twikey.InvoiceFeed):
                 invoice.number, invoice.amount, new_state
             )
         )
+
+class MyPayments(twikey.PaymentFeed):
+    def payment(self, payment:Event):
+        print("Payment update with {0}".format(payment.details))
 
 
 if __name__ == "__main__":

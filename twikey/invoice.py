@@ -4,8 +4,8 @@ import requests
 
 from .model.invoice_request import InvoiceRequest, UpdateInvoiceRequest, DetailsRequest, ActionRequest, \
     UblUploadRequest, BulkInvoiceRequest
-from .model.invoice_response import Invoice, BulkInvoiceResponse, \
-    BulkBatchDetailsResponse, InvoiceFeed
+from .model.invoice_response import Event, Invoice, BulkInvoiceResponse, \
+    BulkBatchDetailsResponse, InvoiceFeed, PaymentFeed
 
 class InvoiceService(object):
     def __init__(self, client) -> None:
@@ -367,4 +367,69 @@ class InvoiceService(object):
             self.logger.debug("Done handing invoice feed")
         except requests.exceptions.RequestException as e:
             raise self.client.raise_error_from_request("Invoice feed", e)
+
+
+    def payment(self, payment_feed: PaymentFeed, start_position=False):
+        """
+        See https://www.twikey.com/api/#payment-feed
+
+        Fetches the latest payment updates.
+
+        This method retrieves events from Twikey since the last sync.
+
+        Args:
+            payment_feed (PaymentFeed): Custom handler class with methods for processing
+                new, updated, or cancelled payment events.
+
+        Returns:
+            None
+
+        Raises:
+            Exception: If the request to the feed endpoint fails or response is invalid.
+        """
+
+        url = self.client.instance_url("/invoice/payment/feed")
+        try:
+            self.client.refresh_token_if_required()
+            initheaders = self.client.headers()
+            if start_position:
+                initheaders["X-RESUME-AFTER"] = str(start_position)
+            response = requests.get(
+                url=url,
+                headers=initheaders,
+                timeout=15,
+            )
+            if "ApiErrorCode" in response.headers:
+                raise self.client.raise_error("Feed payments", response)
+            feed_response = response.json()
+            while len(feed_response["Payments"]) > 0:
+                number_of_invoices = len(feed_response["Payments"])
+                last_invoice = response.headers["X-LAST"]
+                self.logger.debug(
+                    "Feed handling : %d payments from %s till %s"
+                    % (number_of_invoices, start_position, last_invoice)
+                )
+                payment_feed.start(
+                    response.headers["X-LAST"], len(feed_response["Payments"])
+                )
+                error = False
+                for payment in feed_response["Payments"]:
+                    self.logger.debug("Feed handling : %s" % payment)
+                    error = payment_feed.payment(Event(**payment))
+                    if error:
+                        break
+                if error:
+                    self.logger.debug("Error while handing payment, stopping")
+                    break
+                response = requests.get(
+                    url=url,
+                    headers=self.client.headers(),
+                    timeout=15,
+                )
+                if "ApiErrorCode" in response.headers:
+                    raise self.client.raise_error("Feed payment", response)
+                feed_response = response.json()
+            self.logger.debug("Done handing payment feed")
+        except requests.exceptions.RequestException as e:
+            raise self.client.raise_error_from_request("Payment feed", e)
 

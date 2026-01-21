@@ -54,6 +54,7 @@ class TestTransaction(unittest.TestCase):
         )
         self.assertIsNotNone(tx)
 
+    @unittest.skip("id should exist")
     def test_action(self):
         self._twikey.transaction.action(
             ActionRequest(

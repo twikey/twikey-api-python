@@ -6,7 +6,7 @@ from .document import DocumentFeed
 from .model.transaction_response import Transaction
 from .model.transaction_response import TransactionFeed
 from .paylink import PaylinkFeed
-from .model.invoice_response import InvoiceFeed
+from .model.invoice_response import InvoiceFeed, PaymentFeed
 from .refund import RefundFeed
 
 __all__ = [
@@ -23,6 +23,7 @@ __all__ = [
 
     "PaylinkFeed",
     "InvoiceFeed",
+    "PaymentFeed",
     "RefundFeed",
     "TwikeyError",
 ]

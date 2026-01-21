@@ -256,7 +256,7 @@ class TestDocument(unittest.TestCase):
         )
 
     def test_retrieve_pdf(self):
-        retrieved_pdf = self._twikey.document.retrieve_pdf("CORERECURRENTNL17192")
+        retrieved_pdf = self._twikey.document.retrieve_pdf(os.environ["MNDTNUMBER"])
         retrieved_pdf.save("/tmp/pdf.pdf")
         self.assertIsNotNone(retrieved_pdf)
 
