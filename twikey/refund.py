@@ -227,7 +227,7 @@ class RefundService(object):
         except requests.exceptions.RequestException as e:
             raise self.client.raise_error_from_request("Batch detail", e)
 
-    def get_beneficiary_accounts(self, with_address: bool) -> GetbeneficiarieResponse:
+    def get_beneficiary_accounts(self) -> GetbeneficiarieResponse:
         """
         See https://www.twikey.com/api/#get-beneficiary-accounts
 
@@ -235,9 +235,6 @@ class RefundService(object):
 
         This method queries the Twikey API for the latest details related to the mandate, invoice, etc. for the
         provided identifier.
-
-        Args:
-            with_address (bool): if the address needs to be included.
 
         Returns:
             GetbeneficiarieResponse: A structured response object representing the server’s reply.
@@ -251,7 +248,6 @@ class RefundService(object):
             self.client.refresh_token_if_required()
             response = requests.get(
                 url=url,
-                data={"withAddress": with_address},
                 headers=self.client.headers(),
                 timeout=15,
             )

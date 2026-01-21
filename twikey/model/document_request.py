@@ -135,7 +135,7 @@ class SignRequest(InviteRequest):
         key (str, optional): Shortcode from the invite URL. Use this instead of 'mandateNumber' to sign a prepared mandate directly.
                              Max length 36.
         bic (str, optional): BIC code. Required for methods "emachtiging" and "iDIN". Max length 11.
-        signDate (str, optional): Date and time of signature in xsd:dateTime format (ISO 8601).
+        signDate (str, optional): Date and time of signature in format ISO8601.
                                   For SMS, this uses the date of reply.
         place (str, optional): Place of signature.
         bankSignature (bool, optional): For B2B mandates only. Requires bank validation if True (default).

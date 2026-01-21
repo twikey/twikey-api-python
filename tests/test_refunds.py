@@ -203,7 +203,7 @@ class TestRefunds(unittest.TestCase):
         self.assertIsNotNone(details)
 
     def test_get_beneficiaries(self):
-        beneficiaries = self._twikey.refund.get_beneficiary_accounts(with_address=True)
+        beneficiaries = self._twikey.refund.get_beneficiary_accounts()
         self.assertIsNotNone(beneficiaries)
 
     def test_disable_beneficiary(self):

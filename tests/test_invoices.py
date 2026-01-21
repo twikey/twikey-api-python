@@ -95,7 +95,7 @@ class TestInvoices(unittest.TestCase):
         invoice = self._twikey.invoice.create(
             InvoiceRequest(
                 id=str(uuid.uuid4()),
-                number="Inv-" + str(round(time.time())),
+                number="Inv-D-" + str(round(time.time())),
                 title="Invoice " + date.today().strftime("%B"),
                 remittance="596843697521",
                 ct=self.ct,
@@ -118,7 +118,8 @@ class TestInvoices(unittest.TestCase):
             )
         )
         self.assertIsNotNone(invoice)
-        self._twikey.invoice.delete(invoice.id)
+        if invoice.state != "PENING":
+           self._twikey.invoice.delete(invoice.id)
 
     def test_details(self):
         invoice = self._twikey.invoice.details(
