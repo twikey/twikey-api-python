@@ -2,6 +2,8 @@ import os
 import twikey
 import unittest
 
+from twikey.model.paylink_request import PaymentLinkRequest, PaymentLinkStatusRequest, PaymentLinkRefundRequest
+from twikey.model.paylink_response import Paylink
 
 class TestPaylinks(unittest.TestCase):
     _twikey = None
@@ -17,27 +19,50 @@ class TestPaylinks(unittest.TestCase):
         self._twikey = twikey.TwikeyClient(key, base_url)
 
     def test_new_invite(self):
-        tx = self._twikey.paylink.create(
-            {
-                "email": "no-repy@twikey.com",
-                "message": "Test Message",
-                "ref": "Merchant Reference",
-                "amount": 10.00,
-            }
+        pl = self._twikey.paylink.create(
+            PaymentLinkRequest(
+                email= "no-repy@twikey.com",
+                title= "Test Message",
+                ref= "Merchant Reference",
+                amount= 10.00,
+            )
         )
-        self.assertIsNotNone(tx)
+        self.assertIsNotNone(pl)
+        print("New link to be paid @ " + pl.url)
+
+    @unittest.skipIf("PAID_PAYLINK_ID" not in os.environ, "No PAID_PAYLINK_ID set")
+    def test_refund(self):
+        refund = self._twikey.paylink.refund(
+            PaymentLinkRefundRequest(
+                id=os.environ["PAID_PAYLINK_ID"],
+                message="hello",
+                iban="BE51561419613262",
+                bic="GKCCBEBB",
+            )
+        )
+        self.assertIsNotNone(refund.id)
+        self.assertIsNotNone(refund.amount)
+        self.assertIsNotNone(refund.msg)
+        print(refund)
+
+    def test_remove(self):
+        pl = self._twikey.paylink.create(
+            PaymentLinkRequest(
+                email="no-reply@twikey.com",
+                title="Test Message",
+                amount=10.00,
+            )
+        )
+        self.assertIsNotNone(pl.id)
+        self._twikey.paylink.remove(link_id=pl.id)
 
     def test_feed(self):
         self._twikey.paylink.feed(MyFeed())
 
 
 class MyFeed(twikey.PaylinkFeed):
-    def paylink(self, paylink):
-        print(
-            "Paylink update #{0} {1} Euro with new state={2}".format(
-                paylink["id"], paylink["amount"], paylink["state"]
-            )
-        )
+    def paylink(self, paylink:Paylink):
+        print(f"Paylink update #{paylink.id} {paylink.amount} Euro with new state={paylink.state}")
 
 
 if __name__ == "__main__":

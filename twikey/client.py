@@ -4,11 +4,11 @@ import logging
 
 import requests
 
-from .document import Document
-from .invoice import Invoice
-from .paylink import Paylink
-from .transaction import Transaction
-from .refund import Refund
+from .document import DocumentService
+from .invoice import InvoiceService
+from .transaction import TransactionService
+from .paylink import PaylinkService
+from .refund import RefundService
 
 
 class TwikeyClient(object):
@@ -29,7 +29,7 @@ class TwikeyClient(object):
     def __init__(
         self,
         api_key,
-        base_url="https://api.twikey.com",
+        base_url="https://api.twikey.com/creditor",
         user_agent="twikey-python/v0.1.0",
         private_key=None,
     ) -> None:
@@ -38,11 +38,11 @@ class TwikeyClient(object):
         self.private_key = private_key
         self.api_base = base_url
         self.merchant_id = 0
-        self.document = Document(self)
-        self.transaction = Transaction(self)
-        self.paylink = Paylink(self)
-        self.invoice = Invoice(self)
-        self.refund = Refund(self)
+        self.document = DocumentService(self)
+        self.invoice = InvoiceService(self)
+        self.transaction = TransactionService(self)
+        self.paylink = PaylinkService(self)
+        self.refund = RefundService(self)
         self.logger = logging.getLogger(__name__)
 
     def instance_url(self, url=""):
@@ -129,10 +129,7 @@ class TwikeyClient(object):
                 retry_after_seconds = response.headers[
                     "X-Rate-Limit-Retry-After-Seconds"
                 ]
-                error_message = (
-                    "Too many login's, please try again after %s sec."
-                    % retry_after_seconds
-                )
+                error_message = f"Too many login's, please try again after #{retry_after_seconds} sec."
                 raise TwikeyError(
                     ctx="Config", error_code="Rate limit", error=error_message
                 )
@@ -142,17 +139,12 @@ class TwikeyClient(object):
                 self.merchant_id = response.headers["X-MERCHANT-ID"]
                 self.lastLogin = datetime.datetime.now()
             else:
-                error_message = "Invalid response for url=%s : %s" % (
-                    self.instance_url(),
-                    response,
-                )
+                error_message = f"Invalid response for url=#{self.instance_url()} : #{response}"
                 raise TwikeyError(
                     ctx="Config", error_code="Authentication", error=error_message
                 )
         else:
-            self.logger.debug(
-                "Reusing token {} valid till {}".format(self.api_token, self.lastLogin)
-            )
+            self.logger.debug("Reusing token {} valid till {}".format(self.api_token, self.lastLogin))
 
     def headers(self, content_type="application/x-www-form-urlencoded"):
         return {

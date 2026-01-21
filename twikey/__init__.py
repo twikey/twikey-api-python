@@ -1,19 +1,29 @@
 from .webhook import Webhook
-from .client import TwikeyClient
+from .client import TwikeyClient, TwikeyError
+from .model.document_response import Document
+from .model.document_request import InviteRequest, SignRequest
 from .document import DocumentFeed
-from .transaction import TransactionFeed
+from .model.transaction_response import Transaction
+from .model.transaction_response import TransactionFeed
 from .paylink import PaylinkFeed
-from .invoice import InvoiceFeed
+from .model.invoice_response import InvoiceFeed, PaymentFeed
 from .refund import RefundFeed
-from .client import TwikeyError
 
 __all__ = [
-    "Webhook",
     "TwikeyClient",
-    "TwikeyError",
+    "Webhook",
+
+    "Document",
     "DocumentFeed",
+    "InviteRequest",
+    "SignRequest",
+
+    "Transaction",
     "TransactionFeed",
+
     "PaylinkFeed",
     "InvoiceFeed",
+    "PaymentFeed",
     "RefundFeed",
+    "TwikeyError",
 ]
