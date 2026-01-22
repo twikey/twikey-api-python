@@ -4,6 +4,8 @@ import unittest
 import time
 import uuid
 from datetime import date, timedelta
+from dotenv import load_dotenv
+load_dotenv()
 
 from twikey.model.invoice_request import Customer, InvoiceRequest, LineItem, UpdateInvoiceRequest, DetailsRequest, \
     ActionRequest, ActionType, UblUploadRequest, BulkInvoiceRequest
@@ -219,6 +221,11 @@ class TestInvoices(unittest.TestCase):
 
     def test_payments(self):
         self._twikey.invoice.payment(MyPayments(), False)
+
+    def test_retrieve_pdf(self):
+        retrieved_pdf = self._twikey.invoice.retrieve_pdf(os.environ["INVOICEID"])
+        retrieved_pdf.save("/tmp/pdf.pdf")
+        self.assertIsNotNone(retrieved_pdf)
 
 
 class MyFeed(twikey.InvoiceFeed):

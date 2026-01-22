@@ -336,3 +336,19 @@ class BulkBatchDetailsResponse:
 
     def __str__(self):
         return "\n".join(str(item) for item in self.results)
+
+
+class PdfResponse:
+    def __init__(self, content: bytes, filename: str = None, content_type: str = "application/pdf"):
+        self.content = content
+        self.content_type = content_type
+        self.filename = filename or "invoice.pdf"
+
+    def save(self, path: str = None):
+        path = path or self.filename
+        with open(path, "wb") as f:
+            f.write(self.content)
+        return path
+
+    def __str__(self):
+        return f"PdfResponse(filename='{self.filename}', size={len(self.content)} bytes)"
