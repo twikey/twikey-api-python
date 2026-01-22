@@ -437,7 +437,7 @@ class InvoiceService(object):
         """
         See https://www.twikey.com/api/#retrieve-invoice-pdf
 
-        retrieve the PDF of an invoice via GET request to the API.
+        retrieve the PDF of an invoice via GET request to the API
 
         Args:
             invoice_id (str): The UUID of the invoice
