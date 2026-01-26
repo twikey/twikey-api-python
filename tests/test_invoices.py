@@ -4,8 +4,7 @@ import unittest
 import time
 import uuid
 from datetime import date, timedelta
-from dotenv import load_dotenv
-load_dotenv()
+
 
 from twikey.model.invoice_request import Customer, InvoiceRequest, LineItem, UpdateInvoiceRequest, DetailsRequest, \
     ActionRequest, ActionType, UblUploadRequest, BulkInvoiceRequest
