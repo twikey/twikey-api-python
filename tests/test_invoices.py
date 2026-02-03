@@ -13,7 +13,7 @@ class TestInvoices(unittest.TestCase):
     _twikey = None
 
     def setUp(self):
-        key = os.environ["TWIKEY_API_KEY"]
+        key = os.getenv("TWIKEY_API_KEY")
         if key is None:
             self.skipTest("No TWIKEY_API_KEY set")
 

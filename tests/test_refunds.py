@@ -14,7 +14,7 @@ class TestRefunds(unittest.TestCase):
 
     @unittest.skipIf("TWIKEY_API_KEY" not in os.environ, "No TWIKEY_API_KEY set")
     def setUp(self):
-        key = os.environ["TWIKEY_API_KEY"]
+        key = os.getenv("TWIKEY_API_KEY")
         base_url = "https://test.beta.twikey.com/api/creditor"
         if "TWIKEY_API_URL" in os.environ:
             base_url = os.environ["TWIKEY_API_URL"]
