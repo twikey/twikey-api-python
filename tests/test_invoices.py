@@ -5,6 +5,7 @@ import time
 import uuid
 from datetime import date, timedelta
 
+
 from twikey.model.invoice_request import Customer, InvoiceRequest, LineItem, UpdateInvoiceRequest, DetailsRequest, \
     ActionRequest, ActionType, UblUploadRequest, BulkInvoiceRequest
 from twikey.model.invoice_response import Invoice, Event
@@ -219,6 +220,12 @@ class TestInvoices(unittest.TestCase):
 
     def test_payments(self):
         self._twikey.invoice.payment(MyPayments(), False)
+
+    @unittest.skipIf("INVOICEID" not in os.environ, "No INVOICEID set")
+    def test_retrieve_pdf(self):
+        retrieved_pdf = self._twikey.invoice.retrieve_pdf(os.environ["INVOICEID"])
+        retrieved_pdf.save("/tmp/pdf.pdf")
+        self.assertIsNotNone(retrieved_pdf)
 
 
 class MyFeed(twikey.InvoiceFeed):

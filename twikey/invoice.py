@@ -5,7 +5,7 @@ import requests
 from .model.invoice_request import InvoiceRequest, UpdateInvoiceRequest, DetailsRequest, ActionRequest, \
     UblUploadRequest, BulkInvoiceRequest
 from .model.invoice_response import Event, Invoice, BulkInvoiceResponse, \
-    BulkBatchDetailsResponse, InvoiceFeed, PaymentFeed
+    BulkBatchDetailsResponse, InvoiceFeed, PaymentFeed, PdfResponse
 
 class InvoiceService(object):
     def __init__(self, client) -> None:
@@ -433,3 +433,36 @@ class InvoiceService(object):
         except requests.exceptions.RequestException as e:
             raise self.client.raise_error_from_request("Payment feed", e)
 
+    def retrieve_pdf(self, invoice_id: str) -> PdfResponse:
+        """
+        See https://www.twikey.com/api/#retrieve-invoice-pdf
+
+        retrieve the PDF of an invoice via GET request to the API
+
+        Args:
+            invoice_id (str): The UUID of the invoice
+
+        Returns:
+            PdfResponse: A structured response object representing the server’s reply.
+
+        Raises:
+            Exception: If the request to the PDF endpoint fails or response is invalid.
+        """
+
+        url = self.client.instance_url(f"/invoice/{invoice_id}/pdf")
+        try:
+            self.client.refresh_token_if_required()
+            response = requests.get(
+                url=url, headers=self.client.headers(), timeout=15
+            )
+            if "ApiErrorCode" in response.headers:
+                raise self.client.raise_error("pdf", response)
+            filename = None
+            if "Content-Disposition" in response.headers:
+                disposition = response.headers["Content-Disposition"]
+                parts = disposition.split("=")
+                if len(parts) == 2:
+                    filename = parts[1].strip().strip('"')
+            return PdfResponse(content=response.content, filename=filename)
+        except requests.exceptions.RequestException as e:
+            raise self.client.raise_error_from_request("detail", e)
