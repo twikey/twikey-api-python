@@ -26,10 +26,7 @@ fmt: venv
 fmtcheck: venv
 	@${VENV_NAME}/bin/tox -e fmt -- --check --verbose
 
-lint: venv
-	@${VENV_NAME}/bin/tox -e lint
-
 clean:
 	@rm -rf $(VENV_NAME) .coverage .coverage.* build/ dist/ htmlcov/
 
-.PHONY: venv test test-nomock test-travis coveralls fmt fmtcheck lint clean
+.PHONY: venv test test-nomock test-travis coveralls fmt fmtcheck clean
