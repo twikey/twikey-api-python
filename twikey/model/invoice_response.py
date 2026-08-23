@@ -222,7 +222,7 @@ class Event:
             eventId: str,
             eventType: str,
             occurredAt: datetime,
-            amount: int,
+            amount: Union[float, str],
             currency: str,
             origin: Origin,
             gateway: Gateway,
@@ -232,7 +232,8 @@ class Event:
         self.eventId = eventId
         self.eventType = eventType
         self.occurredAt = occurredAt
-        self.amount = amount
+        # the api returns the amount as a quoted string (eg. "62.51")
+        self.amount = float(amount) if amount is not None else None
         self.currency = currency
         self.origin = origin
         self.gateway = gateway
