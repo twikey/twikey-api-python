@@ -11,6 +11,7 @@ class NewRefundRequest:
         date (str): execution date of the transaction (ReqdExctnDt).
         place (str): Optional place.
     """
+
     __slots__ = ["customer_number", "iban", "message", "amount", "ref", "date", "place"]
 
     def __init__(self, **kwargs):
@@ -26,7 +27,7 @@ class NewRefundRequest:
             value = getattr(self, attr, None)
             if value not in [None, ""]:
                 parts = attr.split("_")
-                key = parts[0] + ''.join(p.title() for p in parts[1:])
+                key = parts[0] + "".join(p.title() for p in parts[1:])
                 retval[key] = value
         return retval
 
@@ -39,6 +40,7 @@ class NewRefundBatchRequest:
         ct (str): Profile containing the originating account.
         iban (str): Originating account, if different from ct account (optional).
     """
+
     __slots__ = ["ct", "iban"]
 
     def __init__(self, **kwargs):
@@ -49,7 +51,11 @@ class NewRefundBatchRequest:
             setattr(self, attr, kwargs.get(attr))
 
     def to_request(self) -> dict:
-        return {attr: getattr(self, attr) for attr in self.__slots__ if getattr(self, attr) is not None}
+        return {
+            attr: getattr(self, attr)
+            for attr in self.__slots__
+            if getattr(self, attr) is not None
+        }
 
 
 class RefundBatchStatusRequest:
@@ -60,6 +66,7 @@ class RefundBatchStatusRequest:
         id (str): Batch ID.
         pmtinfid (str): Payment Info ID of the batch.
     """
+
     __slots__ = ["id", "pmtinfid"]
 
     def __init__(self, **kwargs):
@@ -70,7 +77,11 @@ class RefundBatchStatusRequest:
             setattr(self, attr, kwargs.get(attr))
 
     def to_request(self) -> dict:
-        return {attr: getattr(self, attr) for attr in self.__slots__ if getattr(self, attr) is not None}
+        return {
+            attr: getattr(self, attr)
+            for attr in self.__slots__
+            if getattr(self, attr) is not None
+        }
 
 
 class NewBeneficiaryRequest:
@@ -92,9 +103,21 @@ class NewBeneficiaryRequest:
         iban (str): IBAN of the beneficiary (required).
         bic (str): BIC of the beneficiary (optional).
     """
+
     __slots__ = [
-        "customer_number", "name", "email", "l", "mobile", "address",
-        "city", "zip", "country", "company_name", "vatno", "iban", "bic"
+        "customer_number",
+        "name",
+        "email",
+        "l",
+        "mobile",
+        "address",
+        "city",
+        "zip",
+        "country",
+        "company_name",
+        "vatno",
+        "iban",
+        "bic",
     ]
 
     def __init__(self, **kwargs):
@@ -110,7 +133,7 @@ class NewBeneficiaryRequest:
             value = getattr(self, attr, None)
             if value not in [None, ""]:
                 parts = attr.split("_")
-                key = parts[0] + ''.join(p.title() for p in parts[1:])
+                key = parts[0] + "".join(p.title() for p in parts[1:])
                 retval[key] = value
         return retval
 
@@ -123,6 +146,7 @@ class DisableBeneficiaryRequest:
         iban (str): IBAN of the beneficiary (required).
         customer_number (str): The customer number (optional).
     """
+
     __slots__ = ["iban", "customer_number"]
 
     def __init__(self, **kwargs):
@@ -138,6 +162,6 @@ class DisableBeneficiaryRequest:
             value = getattr(self, attr, None)
             if value not in [None, ""]:
                 parts = attr.split("_")
-                key = parts[0] + ''.join(p.title() for p in parts[1:])
+                key = parts[0] + "".join(p.title() for p in parts[1:])
                 retval[key] = value
         return retval

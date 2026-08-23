@@ -1,5 +1,6 @@
 from datetime import datetime
-from typing import Dict, Any
+from typing import Dict, Any, Union
+
 
 class PaymentEvent:
     """
@@ -25,8 +26,19 @@ class PaymentEvent:
     """
 
     __slots__ = (
-        "action", "double", "id", "e2e", "pmtinf", "method", "mndtid",
-        "iban", "rc", "date", "bic", "msg", "link"
+        "action",
+        "double",
+        "id",
+        "e2e",
+        "pmtinf",
+        "method",
+        "mndtid",
+        "iban",
+        "rc",
+        "date",
+        "bic",
+        "msg",
+        "link",
     )
 
     def paid_by_link(self):
@@ -47,22 +59,25 @@ class PaymentEvent:
     def __init__(self, **kwargs):
         self.action: str = kwargs.get("action")
         # double payment
-        self.double:bool = kwargs.get("double")
-        self.method:str = kwargs.get("method") # "sdd", "rcc", "paylink", "transfer", "manual"
+        self.double: bool = kwargs.get("double")
+        self.method: str = kwargs.get(
+            "method"
+        )  # "sdd", "rcc", "paylink", "transfer", "manual"
         self.date = kwargs.get("date")
 
         # Sdd
-        self.e2e:str = kwargs.get("e2e")
-        self.id:int = kwargs.get("id")
-        self.pmtinf:str = kwargs.get("pmtinf")
-        self.mndtid:str = kwargs.get("mndtid")
-        self.rc:str = kwargs.get("rc")
+        self.e2e: str = kwargs.get("e2e")
+        self.id: int = kwargs.get("id")
+        self.pmtinf: str = kwargs.get("pmtinf")
+        self.mndtid: str = kwargs.get("mndtid")
+        self.rc: str = kwargs.get("rc")
         # Paymentlink
-        self.link:int = kwargs.get("link")
+        self.link: int = kwargs.get("link")
         # Transfer
-        self.iban:str = kwargs.get("iban")
-        self.bic:str = kwargs.get("bic")
-        self.msg:str = kwargs.get("msg")
+        self.iban: str = kwargs.get("iban")
+        self.bic: str = kwargs.get("bic")
+        self.msg: str = kwargs.get("msg")
+
 
 class Invoice:
     """
@@ -87,9 +102,21 @@ class Invoice:
     """
 
     __slots__ = [
-        "id", "number", "title", "remittance", "ref", "state", "amount",
-        "date", "duedate", "ct", "url", "lines",
-        "payment_events", "meta", "customer"
+        "id",
+        "number",
+        "title",
+        "remittance",
+        "ref",
+        "state",
+        "amount",
+        "date",
+        "duedate",
+        "ct",
+        "url",
+        "lines",
+        "payment_events",
+        "meta",
+        "customer",
     ]
 
     def __init__(self, **kwargs):
@@ -107,14 +134,17 @@ class Invoice:
 
         # Optional includes
         self.lines = [InvoiceLineItem(**line) for line in kwargs.get("lines", [])]
-        self.payment_events = [PaymentEvent(**events) for events in kwargs.get("lastpayment", [])]
+        self.payment_events = [
+            PaymentEvent(**events) for events in kwargs.get("lastpayment", [])
+        ]
         self.meta = kwargs.get("meta", {})
         self.customer = kwargs.get("customer", {})
 
     def __str__(self):
         base_info = "\n".join(
             f"{slot:<15}: {getattr(self, slot, None)}"
-            for slot in self.__slots__ if slot not in {"lines", "last_payment", "meta", "customer"}
+            for slot in self.__slots__
+            if slot not in {"lines", "last_payment", "meta", "customer"}
         )
 
         line_info = "\n\nLine Items:\n"
@@ -127,7 +157,9 @@ class Invoice:
         payment_info = "\nLast Payments:\n"
         if self.payment_events:
             for p in self.payment_events:
-                payment_info += " - " + ", ".join(f"{k}: {v}" for k, v in p.action) + "\n"
+                payment_info += (
+                    " - " + ", ".join(f"{k}: {v}" for k, v in p.action) + "\n"
+                )
         else:
             payment_info += " - (none)\n"
 
@@ -139,9 +171,12 @@ class Invoice:
         customer_info = ""
         if self.customer:
             customer_info += "\nCustomer:\n"
-            customer_info += "\n".join(f"{k:<15}: {v}" for k, v in self.customer.items()) + "\n"
+            customer_info += (
+                "\n".join(f"{k:<15}: {v}" for k, v in self.customer.items()) + "\n"
+            )
 
         return base_info + line_info + payment_info + meta_info + customer_info
+
 
 class InvoiceFeed:
     def start(self, position: str, lenght: int):
@@ -160,6 +195,7 @@ class InvoiceFeed:
         """
         pass
 
+
 class Origin:
     __slots__ = ("object", "id", "number", "ref")
 
@@ -169,6 +205,7 @@ class Origin:
         self.number = number
         self.ref = ref
 
+
 class Gateway:
     __slots__ = ("id", "name", "type", "iban")
 
@@ -177,6 +214,7 @@ class Gateway:
         self.name = name
         self.type = type
         self.iban = iban
+
 
 class EventError:
     __slots__ = (
@@ -189,13 +227,13 @@ class EventError:
     )
 
     def __init__(
-            self,
-            code: str,
-            description: str,
-            category: str,
-            externalCode: str,
-            action: str,
-            actionStep: int,
+        self,
+        code: str,
+        description: str,
+        category: str,
+        externalCode: str,
+        action: str,
+        actionStep: int,
     ):
         self.code = code
         self.description = description
@@ -203,6 +241,7 @@ class EventError:
         self.externalCode = externalCode
         self.action = action
         self.actionStep = actionStep
+
 
 class Event:
     __slots__ = (
@@ -218,16 +257,16 @@ class Event:
     )
 
     def __init__(
-            self,
-            eventId: str,
-            eventType: str,
-            occurredAt: datetime,
-            amount: Union[float, str],
-            currency: str,
-            origin: Origin,
-            gateway: Gateway,
-            details: Dict[str, Any],
-            error: EventError = None,
+        self,
+        eventId: str,
+        eventType: str,
+        occurredAt: datetime,
+        amount: Union[float, str],
+        currency: str,
+        origin: Origin,
+        gateway: Gateway,
+        details: Dict[str, Any],
+        error: EventError = None,
     ):
         self.eventId = eventId
         self.eventType = eventType
@@ -239,6 +278,7 @@ class Event:
         self.gateway = gateway
         self.details = details
         self.error = error
+
 
 class PaymentFeed:
     def start(self, position: str, lenght: int):
@@ -257,6 +297,7 @@ class PaymentFeed:
         """
         pass
 
+
 class InvoiceLineItem:
     """
     InvoiceLineItem represents a single line item on the invoice.
@@ -271,7 +312,15 @@ class InvoiceLineItem:
         vatsum (float): VAT amount.
     """
 
-    __slots__ = ["code", "description", "quantity", "unitprice", "uom", "vatrate", "vatsum"]
+    __slots__ = [
+        "code",
+        "description",
+        "quantity",
+        "unitprice",
+        "uom",
+        "vatrate",
+        "vatsum",
+    ]
 
     def __init__(self, **kwargs):
         self.code = kwargs.get("code")

@@ -1,8 +1,18 @@
 import requests
 
-from .model.refund_request import NewBeneficiaryRequest, DisableBeneficiaryRequest, NewRefundRequest, \
-    NewRefundBatchRequest
-from .model.refund_response import Refund, RefundBatch, GetbeneficiarieResponse, RefundFeed, Beneficiary
+from .model.refund_request import (
+    NewBeneficiaryRequest,
+    DisableBeneficiaryRequest,
+    NewRefundRequest,
+    NewRefundBatchRequest,
+)
+from .model.refund_response import (
+    Refund,
+    RefundBatch,
+    GetbeneficiarieResponse,
+    RefundFeed,
+    Beneficiary,
+)
 
 
 class RefundService(object):
@@ -110,7 +120,9 @@ class RefundService(object):
         try:
             self.client.refresh_token_if_required()
             headers = self.client.headers("application/json")
-            response = requests.get(url=url, params={"id": refund_id}, headers=headers, timeout=15)
+            response = requests.get(
+                url=url, params={"id": refund_id}, headers=headers, timeout=15
+            )
             if response.status_code != 200:
                 raise self.client.raise_error("Transfer detail", response)
             _links = response.json()["Entries"]
@@ -143,7 +155,9 @@ class RefundService(object):
         url = self.client.instance_url(f"/transfer?id={refund_id}")
         try:
             self.client.refresh_token_if_required()
-            response = requests.delete(url=url, headers=self.client.headers(), timeout=15)
+            response = requests.delete(
+                url=url, headers=self.client.headers(), timeout=15
+            )
             response.raise_for_status()
             if "ApiErrorCode" in response.headers:
                 raise self.client.raise_error("Remove Refund", response)
@@ -253,7 +267,7 @@ class RefundService(object):
             )
             if "ApiErrorCode" in response.headers:
                 raise self.client.raise_error("get beneficiaries", response)
-            return GetbeneficiarieResponse(response.json()['beneficiaries'])
+            return GetbeneficiarieResponse(response.json()["beneficiaries"])
         except requests.exceptions.RequestException as e:
             raise self.client.raise_error_from_request("get beneficiaries", e)
 
@@ -277,7 +291,9 @@ class RefundService(object):
             TwikeyAPIError: If the request fails or the response contains an API error code.
         """
 
-        url = self.client.instance_url(f"/transfers/beneficiaries/{request.iban}?customerNumber={request.customer_number}")
+        url = self.client.instance_url(
+            f"/transfers/beneficiaries/{request.iban}?customerNumber={request.customer_number}"
+        )
         try:
             self.client.refresh_token_if_required()
             response = requests.delete(

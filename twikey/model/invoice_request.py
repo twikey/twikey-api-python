@@ -2,6 +2,7 @@ from enum import Enum
 from uuid import UUID
 from datetime import date
 
+
 class InvoiceRequest:
     """
     Invoice holds the full set of fields used to create an invoice via the Twikey API.
@@ -29,9 +30,25 @@ class InvoiceRequest:
     """
 
     __slots__ = [
-        "id", "number", "title", "remittance", "ref", "ct", "amount", "date", "duedate", "locale",
-        "manual", "pdf", "pdf_url", "redirect_url", "email", "related_invoice_number", "cc",
-        "customer", "lines"
+        "id",
+        "number",
+        "title",
+        "remittance",
+        "ref",
+        "ct",
+        "amount",
+        "date",
+        "duedate",
+        "locale",
+        "manual",
+        "pdf",
+        "pdf_url",
+        "redirect_url",
+        "email",
+        "related_invoice_number",
+        "cc",
+        "customer",
+        "lines",
     ]
 
     _field_map = {
@@ -83,6 +100,7 @@ class InvoiceRequest:
                     retval[key] = value
         return retval
 
+
 class Customer:
     """
     Customer contains customer information used in an invoice.
@@ -103,9 +121,22 @@ class Customer:
         customer_by_document (str): Mandate number.
         customer_by_ref (str): Alternative reference.
     """
+
     __slots__ = [
-        "customer_number", "email", "first_name", "last_name", "company_name", "coc", "lang",
-        "address", "city", "zip", "country", "mobile", "customer_by_document", "customer_by_ref"
+        "customer_number",
+        "email",
+        "first_name",
+        "last_name",
+        "company_name",
+        "coc",
+        "lang",
+        "address",
+        "city",
+        "zip",
+        "country",
+        "mobile",
+        "customer_by_document",
+        "customer_by_ref",
     ]
 
     _field_map = {
@@ -141,6 +172,7 @@ class Customer:
                 data[key] = value
         return data
 
+
 class LineItem:
     """
     LineItem represents a line in the invoice.
@@ -154,8 +186,16 @@ class LineItem:
         vatcode (str): VAT code.
         vatsum (float): VAT amount.
     """
+
     __slots__ = [
-        "code", "description", "quantity", "uom", "unitprice", "vatcode", "vatsum", "vatrate"
+        "code",
+        "description",
+        "quantity",
+        "uom",
+        "unitprice",
+        "vatcode",
+        "vatsum",
+        "vatrate",
     ]
 
     _field_map = {
@@ -185,22 +225,32 @@ class LineItem:
                 data[key] = value
         return data
 
+
 class UpdateInvoiceRequest:
     """
-        InvoiceRequest represents the data required to create or manage an invoice via the Twikey API.
+    InvoiceRequest represents the data required to create or manage an invoice via the Twikey API.
 
-        Attributes:
-            id (str): id of the invoice
-            title (str): Title of the invoice.
-            date (str): Invoice date in format YYYY-MM-DD. (required)
-            duedate (str): Invoice due date in format YYYY-MM-DD. (required)
-            ref (str): Invoice reference (internal or external).
-            pdf (str): Base64-encoded PDF document.
-            status (str): Optional status of the invoice. Can be "booked", "archived", or "paid".
-            extra (dict or str): Custom attributes to be passed with the invoice.
-        """
+    Attributes:
+        id (str): id of the invoice
+        title (str): Title of the invoice.
+        date (str): Invoice date in format YYYY-MM-DD. (required)
+        duedate (str): Invoice due date in format YYYY-MM-DD. (required)
+        ref (str): Invoice reference (internal or external).
+        pdf (str): Base64-encoded PDF document.
+        status (str): Optional status of the invoice. Can be "booked", "archived", or "paid".
+        extra (dict or str): Custom attributes to be passed with the invoice.
+    """
 
-    __slots__ = ["id", "title", "date", "duedate", "ref", "pdf", "status", "extra", ]
+    __slots__ = [
+        "id",
+        "title",
+        "date",
+        "duedate",
+        "ref",
+        "pdf",
+        "status",
+        "extra",
+    ]
 
     _field_map = {
         "id": "id",
@@ -234,6 +284,7 @@ class UpdateInvoiceRequest:
                 else:
                     retval[key] = value
         return retval
+
 
 class DetailsRequest:
     """
@@ -271,6 +322,7 @@ class DetailsRequest:
 
         return {"include": includes} if includes else {}
 
+
 class ActionRequest:
     """
     Attributes:
@@ -298,6 +350,7 @@ class ActionRequest:
             retval["type"] = self.type.value
         return retval
 
+
 class ActionType(Enum):
     EMAIL = "email"
     SMS = "sms"
@@ -309,6 +362,7 @@ class ActionType(Enum):
     REOFFER = "reoffer"
     PEPPOL = "peppol"
     PAYMENTPLAN = "paymentplan"
+
 
 class UblUploadRequest:
     """
@@ -328,14 +382,13 @@ class UblUploadRequest:
         self.invoice_id = kwargs.get("invoice_id")  # optional
 
     def to_headers(self) -> dict:
-        headers = {
-            "Content-Type": "application/xml"
-        }
+        headers = {"Content-Type": "application/xml"}
         if self.manual:
             headers["X-MANUAL"] = True
         if self.invoice_id:
             headers["X-INVOICE-ID"] = self.invoice_id
         return headers
+
 
 class BulkInvoiceRequest:
     """

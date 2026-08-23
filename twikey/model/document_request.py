@@ -46,11 +46,42 @@ class InviteRequest:
     """
 
     __slots__ = [
-        "ct", "l", "iban", "bic", "mandate_number", "customer_number", "email", "last_name", "first_name", "mobile",
-        "address", "city", "zip", "country", "company_name", "vat_no", "contract_number", "campaign", "prefix", "check",
-        "ed", "reminder_days", "send_invite", "token", "require_validation", "document", "transaction_amount",
-        "transaction_message", "transaction_ref", "plan", "subscription_start", "subscription_recurrence",
-        "subscription_stop_after", "subscription_amount", "subscription_message", "subscription_ref"
+        "ct",
+        "l",
+        "iban",
+        "bic",
+        "mandate_number",
+        "customer_number",
+        "email",
+        "last_name",
+        "first_name",
+        "mobile",
+        "address",
+        "city",
+        "zip",
+        "country",
+        "company_name",
+        "vat_no",
+        "contract_number",
+        "campaign",
+        "prefix",
+        "check",
+        "ed",
+        "reminder_days",
+        "send_invite",
+        "token",
+        "require_validation",
+        "document",
+        "transaction_amount",
+        "transaction_message",
+        "transaction_ref",
+        "plan",
+        "subscription_start",
+        "subscription_recurrence",
+        "subscription_stop_after",
+        "subscription_amount",
+        "subscription_message",
+        "subscription_ref",
     ]
 
     _field_map = {
@@ -112,6 +143,7 @@ class InviteRequest:
                     retval[key] = value
         return retval
 
+
 class SignMethod(Enum):
     SMS = "sms"
     DIGISIGN = "digisign"
@@ -123,7 +155,6 @@ class SignMethod(Enum):
 
 
 class SignRequest(InviteRequest):
-
     """
     SignRequest holds the parameters needed to sign a mandate
     through various signing methods supported by the Twikey API, on top of the Invite request parameters
@@ -143,17 +174,25 @@ class SignRequest(InviteRequest):
     """
 
     __slots__ = InviteRequest.__slots__ + [
-        "method", "digsig", "key", "sign_date", "place", "bank_signature"
+        "method",
+        "digsig",
+        "key",
+        "sign_date",
+        "place",
+        "bank_signature",
     ]
 
-    _field_map = {**InviteRequest._field_map, **{
-        "method": "method",
-        "digsig": "digsig",
-        "key": "key",
-        "sign_date": "signDate",
-        "place": "place",
-        "bank_signature": "bankSignature"
-    }}
+    _field_map = {
+        **InviteRequest._field_map,
+        **{
+            "method": "method",
+            "digsig": "digsig",
+            "key": "key",
+            "sign_date": "signDate",
+            "place": "place",
+            "bank_signature": "bankSignature",
+        },
+    }
 
     def __init__(self, **kwargs):
         _ = InviteRequest  # To indicate intentional inheritance without call
@@ -227,7 +266,14 @@ class QueryMandateRequest:
 
     __slots__ = ["iban", "customer_number", "email", "state", "page"]
 
-    def __init__(self, iban: str, customer_number: str, email: str, state: str = "SIGNED", page: int = None):
+    def __init__(
+        self,
+        iban: str,
+        customer_number: str,
+        email: str,
+        state: str = "SIGNED",
+        page: int = None,
+    ):
         self.iban = iban
         self.customer_number = customer_number
         self.email = email
@@ -277,7 +323,7 @@ class MandateActionRequest:
     def to_request(self) -> dict:
         retval = {"mndtId": self.mandate_number, "type": self.type}
         if self.reminder is not None and self.reminder != "":
-            retval["reminder"]=self.reminder
+            retval["reminder"] = self.reminder
         return retval
 
 
@@ -307,9 +353,22 @@ class UpdateMandateRequest:
     """
 
     __slots__ = [
-        "ct", "state", "mobile", "iban", "bic", "customer_number",
-        "email", "first_name", "last_name", "company_name", "coc", "l",
-        "address", "city", "zip", "country"
+        "ct",
+        "state",
+        "mobile",
+        "iban",
+        "bic",
+        "customer_number",
+        "email",
+        "first_name",
+        "last_name",
+        "company_name",
+        "coc",
+        "l",
+        "address",
+        "city",
+        "zip",
+        "country",
     ]
 
     _field_map = {
@@ -363,7 +422,9 @@ class PdfUploadRequest:
 
     __slots__ = ["mandate_number", "pdf_path", "bank_signature"]
 
-    def __init__(self, mandate_number: str, pdf_path: str, bank_signature: bool = "true"):
+    def __init__(
+        self, mandate_number: str, pdf_path: str, bank_signature: bool = "true"
+    ):
         self.mandate_number = mandate_number
         self.pdf_path = pdf_path
         self.bank_signature = bank_signature

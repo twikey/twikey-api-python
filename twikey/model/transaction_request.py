@@ -13,7 +13,16 @@ class NewTransactionRequest:
         refase2e (bool): Use ref as E2E ID (optional).
     """
 
-    __slots__ = ["mndt_id", "date", "reqcolldt", "message", "ref", "amount", "place", "refase2e"]
+    __slots__ = [
+        "mndt_id",
+        "date",
+        "reqcolldt",
+        "message",
+        "ref",
+        "amount",
+        "place",
+        "refase2e",
+    ]
 
     def __init__(self, **kwargs):
         unknown_keys = set(kwargs) - set(self.__slots__)

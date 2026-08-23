@@ -139,12 +139,16 @@ class TwikeyClient(object):
                 self.merchant_id = response.headers["X-MERCHANT-ID"]
                 self.lastLogin = datetime.datetime.now()
             else:
-                error_message = f"Invalid response for url=#{self.instance_url()} : #{response}"
+                error_message = (
+                    f"Invalid response for url=#{self.instance_url()} : #{response}"
+                )
                 raise TwikeyError(
                     ctx="Config", error_code="Authentication", error=error_message
                 )
         else:
-            self.logger.debug("Reusing token {} valid till {}".format(self.api_token, self.lastLogin))
+            self.logger.debug(
+                "Reusing token {} valid till {}".format(self.api_token, self.lastLogin)
+            )
 
     def headers(self, content_type="application/x-www-form-urlencoded"):
         return {

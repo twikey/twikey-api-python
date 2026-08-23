@@ -2,10 +2,23 @@ import logging
 
 import requests
 
-from .model.invoice_request import InvoiceRequest, UpdateInvoiceRequest, DetailsRequest, ActionRequest, \
-    UblUploadRequest, BulkInvoiceRequest
-from .model.invoice_response import Event, Invoice, BulkInvoiceResponse, \
-    BulkBatchDetailsResponse, InvoiceFeed, PaymentFeed
+from .model.invoice_request import (
+    InvoiceRequest,
+    UpdateInvoiceRequest,
+    DetailsRequest,
+    ActionRequest,
+    UblUploadRequest,
+    BulkInvoiceRequest,
+)
+from .model.invoice_response import (
+    Event,
+    Invoice,
+    BulkInvoiceResponse,
+    BulkBatchDetailsResponse,
+    InvoiceFeed,
+    PaymentFeed,
+)
+
 
 class InvoiceService(object):
     def __init__(self, client) -> None:
@@ -13,7 +26,9 @@ class InvoiceService(object):
         self.client = client
         self.logger = logging.getLogger(__name__)
 
-    def create(self, request: InvoiceRequest, origin=False, purpose=False, manual=False) -> Invoice:
+    def create(
+        self, request: InvoiceRequest, origin=False, purpose=False, manual=False
+    ) -> Invoice:
         """
         See https://www.twikey.com/api/#create-invoice
 
@@ -185,10 +200,7 @@ class InvoiceService(object):
             headers.update(request.to_headers())
             with open(request.xml_path, "rb") as file:
                 response = requests.post(
-                    url=url,
-                    headers=headers,
-                    data=file,
-                    timeout=15
+                    url=url, headers=headers, data=file, timeout=15
                 )
             if response.status_code != 200:
                 raise self.client.raise_error("UBL upload", response)
@@ -249,12 +261,7 @@ class InvoiceService(object):
             self.client.refresh_token_if_required()
             headers = self.client.headers("application/json")
             data = request.to_request()
-            response = requests.post(
-                url=url,
-                headers=headers,
-                json=data,
-                timeout=30
-            )
+            response = requests.post(url=url, headers=headers, json=data, timeout=30)
             if response.status_code != 200:
                 raise self.client.raise_error("bulk create invoices", response)
             self.logger.debug("bulk create invoices response: %s", response.text)
@@ -281,11 +288,7 @@ class InvoiceService(object):
         try:
             self.client.refresh_token_if_required()
             headers = self.client.headers("application/json")
-            response = requests.get(
-                url=url,
-                headers=headers,
-                timeout=15
-            )
+            response = requests.get(url=url, headers=headers, timeout=15)
             if response.status_code == 409:
                 self.logger.debug("bulk batch still processing: %s", batch_id)
                 return None
@@ -368,7 +371,6 @@ class InvoiceService(object):
         except requests.exceptions.RequestException as e:
             raise self.client.raise_error_from_request("Invoice feed", e)
 
-
     def payment(self, payment_feed: PaymentFeed, start_position=False):
         """
         See https://www.twikey.com/api/#payment-feed
@@ -432,4 +434,3 @@ class InvoiceService(object):
             self.logger.debug("Done handing payment feed")
         except requests.exceptions.RequestException as e:
             raise self.client.raise_error_from_request("Payment feed", e)
-

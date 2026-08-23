@@ -5,9 +5,7 @@ class CreatedPaylinkResponse:
     Attributes reflect the fields returned by the API.
     """
 
-    __slots__ = [
-        "id", "url", "amount", "msg"
-    ]
+    __slots__ = ["id", "url", "amount", "msg"]
 
     def __init__(self, raw: dict):
         for key in self.__slots__:
@@ -19,8 +17,17 @@ class CreatedPaylinkResponse:
 
 class CustomerInfo:
     __slots__ = [
-        "id", "email", "firstname", "lastname", "address",
-        "city", "zip", "country", "customerNumber", "l", "mobile"
+        "id",
+        "email",
+        "firstname",
+        "lastname",
+        "address",
+        "city",
+        "zip",
+        "country",
+        "customerNumber",
+        "l",
+        "mobile",
     ]
 
     def __init__(self, raw: dict):
@@ -35,6 +42,7 @@ class MetaInfo:
         for key in self.__slots__:
             setattr(self, key, raw.get(key))
 
+
 class TimeInfo:
     __slots__ = ["creation", "expiration", "lastupdate"]
 
@@ -42,12 +50,23 @@ class TimeInfo:
         for key in self.__slots__:
             setattr(self, key, raw.get(key))
 
+
 class Paylink:
     """
     Represents a single entry for paylink responses.
     """
 
-    __slots__ = ["id", "ct", "amount", "msg", "ref", "state", "customer", "meta", "time"]
+    __slots__ = [
+        "id",
+        "ct",
+        "amount",
+        "msg",
+        "ref",
+        "state",
+        "customer",
+        "meta",
+        "time",
+    ]
 
     def __init__(self, raw: dict):
         for key in ["id", "ct", "amount", "msg", "ref", "state"]:
@@ -59,8 +78,9 @@ class Paylink:
     def __str__(self):
         return f"Paylink ID: {self.id}, Ref: {self.ref}, Amount: {self.amount}, State: {self.state}"
 
+
 class PaylinkFeed:
-    def paylink(self, paylink:Paylink) -> bool:
+    def paylink(self, paylink: Paylink) -> bool:
         """
         Custom logic for handeling the paylinks gained from the api call
 

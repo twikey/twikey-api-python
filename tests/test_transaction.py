@@ -3,9 +3,17 @@ import time
 import twikey
 import unittest
 
-from twikey.model.transaction_request import NewTransactionRequest, StatusRequest, ActionRequest, UpdateRequest, \
-    RefundRequest, QueryTransactionsRequest, RemoveTransactionRequest
+from twikey.model.transaction_request import (
+    NewTransactionRequest,
+    StatusRequest,
+    ActionRequest,
+    UpdateRequest,
+    RefundRequest,
+    QueryTransactionsRequest,
+    RemoveTransactionRequest,
+)
 from twikey.model.transaction_response import Transaction
+
 
 class TestTransaction(unittest.TestCase):
     _twikey = None
@@ -34,11 +42,11 @@ class TestTransaction(unittest.TestCase):
     def test_new_invite(self):
         tx = self._twikey.transaction.create(
             NewTransactionRequest(
-                mndt_id = self.mndt_id,
-                message = "Test Message",
-                ref = "Merchant Reference",
-                amount = 10.00,
-                place = "Here",
+                mndt_id=self.mndt_id,
+                message="Test Message",
+                ref="Merchant Reference",
+                amount=10.00,
+                place="Here",
             )
         )
         self.assertIsNotNone(tx)
@@ -49,7 +57,7 @@ class TestTransaction(unittest.TestCase):
             StatusRequest(
                 mndt_id=self.mndt_id,
                 state="ERROR",
-                include=["collection", "lastupdate", "links"]
+                include=["collection", "lastupdate", "links"],
             )
         )
         self.assertIsNotNone(tx)
@@ -116,7 +124,7 @@ class TestTransaction(unittest.TestCase):
 
         mandates = self._twikey.transaction.query(
             QueryTransactionsRequest(
-                from_id=(tx.id-2),
+                from_id=(tx.id - 2),
             )
         )
         self.assertIsNotNone(mandates)
@@ -132,11 +140,7 @@ class TestTransaction(unittest.TestCase):
             )
         )
 
-        self._twikey.transaction.remove(
-            RemoveTransactionRequest(
-                id=tx.id
-            )
-        )
+        self._twikey.transaction.remove(RemoveTransactionRequest(id=tx.id))
 
     @unittest.skipIf("CAMT053" not in os.environ, "No CAMT053 (file) set")
     def test_import_camt053(self):
@@ -165,7 +169,10 @@ class MyFeed(twikey.TransactionFeed):
             if final:
                 # final means Twikey has gone through all dunning steps, but customer still did not pay
                 _final = "with no more dunning steps"
-        print(f"Transaction update #{transaction.amount} euro with #{ref} #{_state} #{_final}")
+        print(
+            f"Transaction update #{transaction.amount} euro with #{ref} #{_state} #{_final}"
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

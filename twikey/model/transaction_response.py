@@ -6,8 +6,25 @@ class Transaction:
     """
 
     __slots__ = [
-        "id", "amount", "contract", "contractId", "date", "mndtId", "msg", "place", "ref", "state",
-        "reqcolldt", "admincharge", "final", "bkerror", "bkmsg", "bkdate", "lastupdate", "collection", "link"
+        "id",
+        "amount",
+        "contract",
+        "contractId",
+        "date",
+        "mndtId",
+        "msg",
+        "place",
+        "ref",
+        "state",
+        "reqcolldt",
+        "admincharge",
+        "final",
+        "bkerror",
+        "bkmsg",
+        "bkdate",
+        "lastupdate",
+        "collection",
+        "link",
     ]
 
     def __init__(self, raw: dict):
@@ -18,13 +35,14 @@ class Transaction:
         """
         :return: whether this transaction was paid or not, note that this can change at any time
         """
-        return self.state == 'PAID'
+        return self.state == "PAID"
 
     def is_error(self):
-        return self.state == 'ERROR'
+        return self.state == "ERROR"
 
     def __str__(self):
         return f"Transaction ID: {self.id}, Amount: {self.amount}, State: {self.state}"
+
 
 class TransactionFeed:
     def transaction(self, transaction: Transaction):
@@ -58,9 +76,7 @@ class RefundResponse:
     Attributes reflect the fields returned by the API.
     """
 
-    __slots__ = [
-        "id", "iban", "bic", "amount", "message", "place", "ref", "date"
-    ]
+    __slots__ = ["id", "iban", "bic", "amount", "message", "place", "ref", "date"]
 
     def __init__(self, raw: dict):
         for key in self.__slots__:

@@ -1,12 +1,28 @@
 from array import ArrayType
 from datetime import datetime
 
+
 class Document:
     __slots__ = [
-        "mandate_number", "state", "type", "sequence_type", "sign_date",
-        "debtor_name", "debtor_street", "debtor_city", "debtor_zip", "debtor_country", "btw_nummer",
-        "country_of_residence", "debtor_email", "customer_number", "iban", "bic", "debtor_bank",
-        "contract_number", "supplementary_data"
+        "mandate_number",
+        "state",
+        "type",
+        "sequence_type",
+        "sign_date",
+        "debtor_name",
+        "debtor_street",
+        "debtor_city",
+        "debtor_zip",
+        "debtor_country",
+        "btw_nummer",
+        "country_of_residence",
+        "debtor_email",
+        "customer_number",
+        "iban",
+        "bic",
+        "debtor_bank",
+        "contract_number",
+        "supplementary_data",
     ]
 
     def __init__(self, **kwargs):
@@ -45,13 +61,14 @@ class Document:
 
         # Convert SplmtryData into a dict for easier use
         self.supplementary_data = {
-            item["Key"]: item["Value"]
-            for item in mndt.get("SplmtryData", [])
+            item["Key"]: item["Value"] for item in mndt.get("SplmtryData", [])
         }
 
     def __str__(self):
         base_info = "\n".join(
-            f"{slot:<22}: {getattr(self, slot, None)}" for slot in self.__slots__ if slot != "supplementary_data"
+            f"{slot:<22}: {getattr(self, slot, None)}"
+            for slot in self.__slots__
+            if slot != "supplementary_data"
         )
 
         supp_info = "Supplimentary Data\n\n"
@@ -83,8 +100,14 @@ class DocumentFeed:
         """
         pass
 
-    def updated_document(self, original_doc_number: str, doc: Document, reason: str, author: str,
-                         evt_time: datetime) -> bool:
+    def updated_document(
+        self,
+        original_doc_number: str,
+        doc: Document,
+        reason: str,
+        author: str,
+        evt_time: datetime,
+    ) -> bool:
         """
         Handle an update of a document
         :param original_doc_number: original reference to the document
@@ -95,7 +118,9 @@ class DocumentFeed:
         """
         pass
 
-    def cancelled_document(self, doc_number: str, reason: str, author: str, evt_time: datetime) -> bool:
+    def cancelled_document(
+        self, doc_number: str, reason: str, author: str, evt_time: datetime
+    ) -> bool:
         """
         Handle an cancelled document
         :param doc_number: reference to the document
@@ -132,9 +157,7 @@ class SignResponse:
 
 
 class QueryMandateResponse:
-    __slots__ = [
-        "mandates"
-    ]
+    __slots__ = ["mandates"]
 
     def __init__(self, contracts: ArrayType):
         self.mandates = []
@@ -150,11 +173,18 @@ class QueryMandateResponse:
             self.mandates.append(doc)
 
     def __str__(self):
-        return "\n".join(f"{slot:<18}: {getattr(self, slot, None)}" for slot in self.__slots__)
+        return "\n".join(
+            f"{slot:<18}: {getattr(self, slot, None)}" for slot in self.__slots__
+        )
 
 
 class PdfResponse:
-    def __init__(self, content: bytes, filename: str = None, content_type: str = "application/pdf"):
+    def __init__(
+        self,
+        content: bytes,
+        filename: str = None,
+        content_type: str = "application/pdf",
+    ):
         self.content = content
         self.content_type = content_type
         self.filename = filename or "mandate.pdf"
@@ -166,7 +196,9 @@ class PdfResponse:
         return path
 
     def __str__(self):
-        return f"PdfResponse(filename='{self.filename}', size={len(self.content)} bytes)"
+        return (
+            f"PdfResponse(filename='{self.filename}', size={len(self.content)} bytes)"
+        )
 
 
 class CustomerAccessResponse:

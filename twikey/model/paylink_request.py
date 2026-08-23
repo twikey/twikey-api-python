@@ -34,9 +34,32 @@ class PaymentLinkRequest:
     """
 
     __slots__ = [
-        "title", "amount", "customer_number", "email", "last_name", "first_name", "company_name",
-        "coc", "l", "mobile", "ct", "remittance", "ref", "redirect_url", "place", "expiry", "send_invite",
-        "address", "city", "zip", "country", "txref", "method", "invoice", "is_template", "custom"
+        "title",
+        "amount",
+        "customer_number",
+        "email",
+        "last_name",
+        "first_name",
+        "company_name",
+        "coc",
+        "l",
+        "mobile",
+        "ct",
+        "remittance",
+        "ref",
+        "redirect_url",
+        "place",
+        "expiry",
+        "send_invite",
+        "address",
+        "city",
+        "zip",
+        "country",
+        "txref",
+        "method",
+        "invoice",
+        "is_template",
+        "custom",
     ]
 
     def __init__(self, **kwargs):
@@ -53,33 +76,34 @@ class PaymentLinkRequest:
         en verwijdert None of lege waarden.
         """
         retval = {}
-        retval["title"]=self.title
-        retval["amount"]=self.amount
-        retval["customerNumber"]=self.customer_number
-        retval["email"]=self.email
-        retval["lastName"]=self.last_name
-        retval["firstName"]=self.first_name
-        retval["companyName"]=self.company_name
-        retval["coc"]=self.coc
-        retval["l"]=self.l
-        retval["mobile"]=self.mobile
-        retval["ct"]=self.ct
-        retval["remittance"]=self.remittance
-        retval["ref"]=self.ref
-        retval["redirectUrl"]=self.redirect_url
-        retval["place"]=self.place
-        retval["expiry"]=self.expiry
-        retval["sendInvite"]=self.send_invite
-        retval["address"]=self.address
-        retval["city"]=self.city
-        retval["zip"]=self.zip
-        retval["country"]=self.country
-        retval["txref"]=self.txref
-        retval["method"]=self.method
-        retval["invoice"]=self.invoice
-        retval["isTemplate"]=self.is_template
-        retval["custom"]=self.custom
+        retval["title"] = self.title
+        retval["amount"] = self.amount
+        retval["customerNumber"] = self.customer_number
+        retval["email"] = self.email
+        retval["lastName"] = self.last_name
+        retval["firstName"] = self.first_name
+        retval["companyName"] = self.company_name
+        retval["coc"] = self.coc
+        retval["l"] = self.l
+        retval["mobile"] = self.mobile
+        retval["ct"] = self.ct
+        retval["remittance"] = self.remittance
+        retval["ref"] = self.ref
+        retval["redirectUrl"] = self.redirect_url
+        retval["place"] = self.place
+        retval["expiry"] = self.expiry
+        retval["sendInvite"] = self.send_invite
+        retval["address"] = self.address
+        retval["city"] = self.city
+        retval["zip"] = self.zip
+        retval["country"] = self.country
+        retval["txref"] = self.txref
+        retval["method"] = self.method
+        retval["invoice"] = self.invoice
+        retval["isTemplate"] = self.is_template
+        retval["custom"] = self.custom
         return retval
+
 
 class PaymentLinkStatusRequest:
     """
@@ -96,11 +120,11 @@ class PaymentLinkStatusRequest:
     __slots__ = ["id", "ref", "include_meta", "include_refunds"]
 
     def __init__(
-            self,
-            id: str = None,
-            ref: str = None,
-            include_meta: bool = False,
-            include_refunds: bool = False
+        self,
+        id: str = None,
+        ref: str = None,
+        include_meta: bool = False,
+        include_refunds: bool = False,
     ):
         self.id = id
         self.ref = ref
@@ -126,6 +150,7 @@ class PaymentLinkStatusRequest:
             params["include"] = includes if len(includes) > 1 else includes[0]
 
         return params
+
 
 class PaymentLinkRefundRequest:
     """

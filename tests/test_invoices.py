@@ -5,9 +5,19 @@ import time
 import uuid
 from datetime import date, timedelta
 
-from twikey.model.invoice_request import Customer, InvoiceRequest, LineItem, UpdateInvoiceRequest, DetailsRequest, \
-    ActionRequest, ActionType, UblUploadRequest, BulkInvoiceRequest
+from twikey.model.invoice_request import (
+    Customer,
+    InvoiceRequest,
+    LineItem,
+    UpdateInvoiceRequest,
+    DetailsRequest,
+    ActionRequest,
+    ActionType,
+    UblUploadRequest,
+    BulkInvoiceRequest,
+)
 from twikey.model.invoice_response import Invoice, Event
+
 
 class TestInvoices(unittest.TestCase):
     _twikey = None
@@ -30,25 +40,25 @@ class TestInvoices(unittest.TestCase):
     def test_new_invoice(self):
         invoice = self._twikey.invoice.create(
             InvoiceRequest(
-                id = "58073359-7fd0-4683-a60f-8c08096a189e",
-                number = "Inv-" + str(round(time.time())),
-                title = "Invoice " + date.today().strftime("%B"),
-                remittance = "596843697521",
-                ct = self.ct,
-                amount = 100,
-                date = date.today(),
-                duedate = (date.today() + timedelta(days=7)),
-                customer = Customer(
-                    customer_number = "customer123",
-                    email = "no-reply@twikey.com",
-                    first_name = "Twikey",
-                    last_name = "Support",
-                    address = "Derbystraat 43",
-                    city = "Gent",
-                    zip = "9000",
-                    country = "BE",
-                    lang = "nl",
-                    mobile = "32498665995",
+                id="58073359-7fd0-4683-a60f-8c08096a189e",
+                number="Inv-" + str(round(time.time())),
+                title="Invoice " + date.today().strftime("%B"),
+                remittance="596843697521",
+                ct=self.ct,
+                amount=100,
+                date=date.today(),
+                duedate=(date.today() + timedelta(days=7)),
+                customer=Customer(
+                    customer_number="customer123",
+                    email="no-reply@twikey.com",
+                    first_name="Twikey",
+                    last_name="Support",
+                    address="Derbystraat 43",
+                    city="Gent",
+                    zip="9000",
+                    country="BE",
+                    lang="nl",
+                    mobile="32498665995",
                 ),
                 # "pdf": "JVBERi0xLj....RU9GCg=="
                 lines=[
@@ -71,8 +81,8 @@ class TestInvoices(unittest.TestCase):
                         vatcode="21",
                         vatsum=8.68,
                         vatrate=21.0,
-                    )
-                ]
+                    ),
+                ],
             )
         )
         self.assertIsNotNone(invoice)
@@ -86,7 +96,7 @@ class TestInvoices(unittest.TestCase):
                 title="Invoice " + date.today().strftime("%B"),
                 date=(date.today() + timedelta(days=7)),
                 duedate=(date.today() + timedelta(days=14)),
-                state="BOOKED"
+                state="BOOKED",
             )
         )
         self.assertIsNotNone(invoice)
@@ -119,7 +129,7 @@ class TestInvoices(unittest.TestCase):
         )
         self.assertIsNotNone(invoice)
         if invoice.state != "PENING":
-           self._twikey.invoice.delete(invoice.id)
+            self._twikey.invoice.delete(invoice.id)
 
     @unittest.skip("id should exist")
     def test_details(self):
@@ -222,7 +232,7 @@ class TestInvoices(unittest.TestCase):
 
 
 class MyFeed(twikey.InvoiceFeed):
-    def invoice(self, invoice:Invoice):
+    def invoice(self, invoice: Invoice):
         new_state = ""
         if invoice.state == "PAID":
             lastpayment_ = invoice.payment_events
@@ -236,8 +246,9 @@ class MyFeed(twikey.InvoiceFeed):
             )
         )
 
+
 class MyPayments(twikey.PaymentFeed):
-    def payment(self, payment:Event):
+    def payment(self, payment: Event):
         print("Payment update with {0}".format(payment.details))
 
 

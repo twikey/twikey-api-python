@@ -3,11 +3,25 @@ import logging
 import requests
 from datetime import datetime
 
-from .model.document_request import InviteRequest, SignRequest, FetchMandateRequest, QueryMandateRequest, \
-    MandateActionRequest, UpdateMandateRequest, PdfUploadRequest
+from .model.document_request import (
+    InviteRequest,
+    SignRequest,
+    FetchMandateRequest,
+    QueryMandateRequest,
+    MandateActionRequest,
+    UpdateMandateRequest,
+    PdfUploadRequest,
+)
 
-from .model.document_response import InviteResponse, SignResponse, Document, QueryMandateResponse, PdfResponse, \
-    CustomerAccessResponse, DocumentFeed
+from .model.document_response import (
+    InviteResponse,
+    SignResponse,
+    Document,
+    QueryMandateResponse,
+    PdfResponse,
+    CustomerAccessResponse,
+    DocumentFeed,
+)
 
 
 class DocumentService(object):
@@ -73,7 +87,6 @@ class DocumentService(object):
             TwikeyAPIError: If the API returns an error or the request fails.
         """
 
-
         url = self.client.instance_url("/sign")
         data = request.to_request()
         if not request.method:
@@ -122,7 +135,9 @@ class DocumentService(object):
             json_response = response.json()
             json_response["headers"] = response.headers
             self.logger.debug("Mandate details : %s" % json_response)
-            return Document(mandate=json_response.get("Mndt"), headers=json_response.get("headers"))
+            return Document(
+                mandate=json_response.get("Mndt"), headers=json_response.get("headers")
+            )
         except requests.exceptions.RequestException as e:
             raise self.client.raise_error_from_request("detail", e)
 
@@ -332,7 +347,13 @@ class DocumentService(object):
                         at_ = msg["EvtTime"]
                         if at_.endswith("Z"):
                             at_ = at_.replace("Z", "+00:00")
-                        error = document_feed.updated_document(mndt_id_, Document(mandate=mndt_), rsn_, author_, datetime.fromisoformat(at_))
+                        error = document_feed.updated_document(
+                            mndt_id_,
+                            Document(mandate=mndt_),
+                            rsn_,
+                            author_,
+                            datetime.fromisoformat(at_),
+                        )
                     elif "CxlRsn" in msg:
                         mndt_ = msg["OrgnlMndtId"]
                         cxl_rsn_ = msg["CxlRsn"]
@@ -342,14 +363,18 @@ class DocumentService(object):
                         if at_.endswith("Z"):
                             at_ = at_.replace("Z", "+00:00")
                         self.logger.debug("Feed cancel : %s" % mndt_)
-                        error = document_feed.cancelled_document(mndt_, rsn_, author_, datetime.fromisoformat(at_))
+                        error = document_feed.cancelled_document(
+                            mndt_, rsn_, author_, datetime.fromisoformat(at_)
+                        )
                     else:
                         mndt_ = msg["Mndt"]
                         at_ = msg["EvtTime"]
                         if at_.endswith("Z"):
                             at_ = at_.replace("Z", "+00:00")
                         self.logger.debug("Feed create : %s" % mndt_)
-                        error = document_feed.new_document(Document(mandate=mndt_), datetime.fromisoformat(at_))
+                        error = document_feed.new_document(
+                            Document(mandate=mndt_), datetime.fromisoformat(at_)
+                        )
                     if error:
                         break
                 if error:
@@ -384,12 +409,16 @@ class DocumentService(object):
         """
 
         url = self.client.instance_url(
-            f"/mandate/pdf?mndtId={request.mndt_id}&bankSignature={request.bank_signature}")
+            f"/mandate/pdf?mndtId={request.mndt_id}&bankSignature={request.bank_signature}"
+        )
         try:
             self.client.refresh_token_if_required()
             with open(request.pdf_path, "rb") as file:
                 response = requests.post(
-                    url=url, data=file, headers=self.client.headers('application/pdf'), timeout=15
+                    url=url,
+                    data=file,
+                    headers=self.client.headers("application/pdf"),
+                    timeout=15,
                 )
             if "ApiErrorCode" in response.headers:
                 raise self.client.raise_error("pdf", response)
@@ -415,9 +444,7 @@ class DocumentService(object):
         url = self.client.instance_url(f"/mandate/pdf?mndtId={mndt_id}")
         try:
             self.client.refresh_token_if_required()
-            response = requests.get(
-                url=url, headers=self.client.headers(), timeout=15
-            )
+            response = requests.get(url=url, headers=self.client.headers(), timeout=15)
             if "ApiErrorCode" in response.headers:
                 raise self.client.raise_error("pdf", response)
             filename = None
@@ -481,7 +508,10 @@ class DocumentService(object):
         try:
             self.client.refresh_token_if_required()
             response = requests.post(
-                url=url, data={"mndtId": mndt_id}, headers=self.client.headers(), timeout=15
+                url=url,
+                data={"mndtId": mndt_id},
+                headers=self.client.headers(),
+                timeout=15,
             )
             if "ApiErrorCode" in response.headers:
                 raise self.client.raise_error("Cancel", response)

@@ -1,6 +1,10 @@
 import requests
 
-from .model.paylink_request import PaymentLinkRequest, PaymentLinkStatusRequest, PaymentLinkRefundRequest
+from .model.paylink_request import (
+    PaymentLinkRequest,
+    PaymentLinkStatusRequest,
+    PaymentLinkRefundRequest,
+)
 from .model.paylink_response import CreatedPaylinkResponse, Paylink, PaylinkFeed
 
 
@@ -104,7 +108,9 @@ class PaylinkService(object):
         url = self.client.instance_url("/payment/link/refund")
         try:
             self.client.refresh_token_if_required()
-            response = requests.post(url=url, data=data, headers=self.client.headers(), timeout=15)
+            response = requests.post(
+                url=url, data=data, headers=self.client.headers(), timeout=15
+            )
             response.raise_for_status()
             if "ApiErrorCode" in response.headers:
                 raise self.client.raise_error("Update transaction", response)
@@ -135,7 +141,9 @@ class PaylinkService(object):
         url = self.client.instance_url(f"/payment/link?id={link_id}")
         try:
             self.client.refresh_token_if_required()
-            response = requests.delete(url=url, headers=self.client.headers(), timeout=15)
+            response = requests.delete(
+                url=url, headers=self.client.headers(), timeout=15
+            )
             response.raise_for_status()
             if "ApiErrorCode" in response.headers:
                 raise self.client.raise_error("Update transaction", response)
@@ -191,4 +199,3 @@ class PaylinkService(object):
                 feed_response = response.json()
         except requests.exceptions.RequestException as e:
             raise self.client.raise_error_from_request("Feed paylink", e)
-

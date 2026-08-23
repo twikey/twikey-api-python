@@ -2,9 +2,18 @@ import os
 import twikey
 import unittest
 
-from twikey.model.document_request import SignMethod, UpdateMandateRequest, PdfUploadRequest
-from twikey.model.document_request import InviteRequest, SignRequest, FetchMandateRequest, QueryMandateRequest, \
-    MandateActionRequest
+from twikey.model.document_request import (
+    SignMethod,
+    UpdateMandateRequest,
+    PdfUploadRequest,
+)
+from twikey.model.document_request import (
+    InviteRequest,
+    SignRequest,
+    FetchMandateRequest,
+    QueryMandateRequest,
+    MandateActionRequest,
+)
 
 
 class TestDocument(unittest.TestCase):
@@ -101,7 +110,6 @@ class TestDocument(unittest.TestCase):
         self.assertIsNotNone(fetched_mandate.mandate_number)
         self.assertIsNotNone(fetched_mandate.iban)
 
-
     @unittest.skip("id should exist")
     def test_query(self):
         id = ""
@@ -157,14 +165,12 @@ class TestDocument(unittest.TestCase):
             )
         )
         self.assertIsNotNone(signed_mandate)
-        self._twikey.document.cancel(signed_mandate.mandate_number,"reason for cancel")
+        self._twikey.document.cancel(signed_mandate.mandate_number, "reason for cancel")
 
     def test_action(self):
         self._twikey.document.action(
             MandateActionRequest(
-                mandate_number=os.environ["MNDTNUMBER"],
-                type="reminder",
-                reminder="1"
+                mandate_number=os.environ["MNDTNUMBER"], type="reminder", reminder="1"
             )
         )
 
@@ -204,7 +210,7 @@ class TestDocument(unittest.TestCase):
                 city="Brussels",
                 zip="1000",
                 country="BE",
-            )
+            ),
         )
 
     @unittest.skipIf("PDF_FILE" not in os.environ, "No PDF_FILE set")
@@ -306,7 +312,9 @@ class TestDocument(unittest.TestCase):
         )
         self.assertIsNotNone(signed_mandate)
 
-        access_url = self._twikey.document.customer_access(signed_mandate.mandate_number)
+        access_url = self._twikey.document.customer_access(
+            signed_mandate.mandate_number
+        )
         self.assertIsNotNone(access_url)
 
     def test_feed(self):
@@ -317,7 +325,14 @@ class MyDocumentFeed(twikey.DocumentFeed):
     def new_document(self, doc: twikey.Document, evt_time):
         print("Document created   ", doc.mandate_number, "@", evt_time)
 
-    def updated_document(self, original_doc_number: str, doc: twikey.Document, reason: str, author: str, evt_time):
+    def updated_document(
+        self,
+        original_doc_number: str,
+        doc: twikey.Document,
+        reason: str,
+        author: str,
+        evt_time,
+    ):
         print("Document updated   ", original_doc_number, "b/c", reason, "@", evt_time)
 
     def cancelled_document(self, doc_number: str, reason: str, author: str, evt_time):

@@ -1,8 +1,20 @@
 import requests
 
-from .model.transaction_request import NewTransactionRequest, StatusRequest, QueryTransactionsRequest, ActionRequest, \
-    UpdateRequest, RefundRequest, RemoveTransactionRequest
-from .model.transaction_response import Transaction, TransactionStatusResponse, RefundResponse, TransactionFeed
+from .model.transaction_request import (
+    NewTransactionRequest,
+    StatusRequest,
+    QueryTransactionsRequest,
+    ActionRequest,
+    UpdateRequest,
+    RefundRequest,
+    RemoveTransactionRequest,
+)
+from .model.transaction_response import (
+    Transaction,
+    TransactionStatusResponse,
+    RefundResponse,
+    TransactionFeed,
+)
 
 
 class TransactionService(object):
@@ -103,11 +115,17 @@ class TransactionService(object):
         """
 
         data = request.to_request()
-        url = self.client.instance_url(f"/transaction/query?fromId={data.get('fromId')}")
+        url = self.client.instance_url(
+            f"/transaction/query?fromId={data.get('fromId')}"
+        )
         try:
             self.client.refresh_token_if_required()
             headers = self.client.headers()
-            response = requests.get(url=url, headers=headers, timeout=15,)
+            response = requests.get(
+                url=url,
+                headers=headers,
+                timeout=15,
+            )
             if response.status_code != 200:
                 raise self.client.raise_error("Transaction detail", response)
             return TransactionStatusResponse(response.json())
@@ -173,7 +191,9 @@ class TransactionService(object):
         url = self.client.instance_url("/transaction")
         try:
             self.client.refresh_token_if_required()
-            response = requests.put(url=url, data=data, headers=self.client.headers(), timeout=15)
+            response = requests.put(
+                url=url, data=data, headers=self.client.headers(), timeout=15
+            )
             response.raise_for_status()
             if "ApiErrorCode" in response.headers:
                 raise self.client.raise_error("Update transaction", response)
@@ -204,7 +224,9 @@ class TransactionService(object):
         url = self.client.instance_url("/transaction/refund")
         try:
             self.client.refresh_token_if_required()
-            response = requests.post(url=url, data=data, headers=self.client.headers(), timeout=15)
+            response = requests.post(
+                url=url, data=data, headers=self.client.headers(), timeout=15
+            )
             response.raise_for_status()
             if "ApiErrorCode" in response.headers:
                 raise self.client.raise_error("Update transaction", response)
@@ -240,7 +262,9 @@ class TransactionService(object):
         url = self.client.instance_url(f"/transaction?id={data.get('id')}")
         try:
             self.client.refresh_token_if_required()
-            response = requests.delete(url=url, headers=self.client.headers(), timeout=15)
+            response = requests.delete(
+                url=url, headers=self.client.headers(), timeout=15
+            )
             response.raise_for_status()
             if "ApiErrorCode" in response.headers:
                 raise self.client.raise_error("Update transaction", response)

@@ -2,8 +2,13 @@ import os
 import twikey
 import unittest
 import uuid
-from twikey.model.refund_request import NewBeneficiaryRequest, NewRefundRequest, \
-    NewRefundBatchRequest, RefundBatchStatusRequest, DisableBeneficiaryRequest
+from twikey.model.refund_request import (
+    NewBeneficiaryRequest,
+    NewRefundRequest,
+    NewRefundBatchRequest,
+    RefundBatchStatusRequest,
+    DisableBeneficiaryRequest,
+)
 from twikey.model.refund_response import Refund
 
 
@@ -29,28 +34,28 @@ class TestRefunds(unittest.TestCase):
         customer_number = str(uuid.uuid4())
         benef = self._twikey.refund.create_beneficiary_account(
             NewBeneficiaryRequest(
-                    customer_number=customer_number,
-                    email="info@twikey.com",
-                    name="Info Twikey",
-                    l="en",
-                    address="Abby road",
-                    city="Liverpool",
-                    zip="1526",
-                    country="BE",
-                    mobile="",
-                    iban="NL46ABNA8910219718",
-                    bic="ABNANL2A",
+                customer_number=customer_number,
+                email="info@twikey.com",
+                name="Info Twikey",
+                l="en",
+                address="Abby road",
+                city="Liverpool",
+                zip="1526",
+                country="BE",
+                mobile="",
+                iban="NL46ABNA8910219718",
+                bic="ABNANL2A",
             )
         )
         self.assertIsNotNone(benef)
 
         refund = self._twikey.refund.create(
             NewRefundRequest(
-                    customer_number=customer_number,
-                    iban="NL46ABNA8910219718",
-                    message="Refund faulty item",
-                    ref="My internal reference",
-                    amount=10.99,
+                customer_number=customer_number,
+                iban="NL46ABNA8910219718",
+                message="Refund faulty item",
+                ref="My internal reference",
+                amount=10.99,
             )
         )
         self.assertIsNotNone(refund)
@@ -233,8 +238,7 @@ class TestRefunds(unittest.TestCase):
 
         self._twikey.refund.disable_beneficiary_accounts(
             DisableBeneficiaryRequest(
-                iban = "NL46ABNA8910219718",
-                customer_number = customer_number
+                iban="NL46ABNA8910219718", customer_number=customer_number
             )
         )
 
@@ -243,8 +247,11 @@ class TestRefunds(unittest.TestCase):
 
 
 class MyFeed(twikey.RefundFeed):
-    def refund(self, refund:Refund):
-        print(f"Refund update #{refund.id} {refund.amount} Euro with new state={refund.state}")
+    def refund(self, refund: Refund):
+        print(
+            f"Refund update #{refund.id} {refund.amount} Euro with new state={refund.state}"
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
